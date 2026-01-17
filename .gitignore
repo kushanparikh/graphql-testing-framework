@@ -1,0 +1,7 @@
+# List of files and directories to ignore in git
+node_modules/
+dist/
+*.log
+.env
+.DS_Store
+*.tsbuildinfo
