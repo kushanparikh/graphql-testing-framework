@@ -102,7 +102,7 @@ graphql-api-testing-suite/
 │   └── test-data.ts            # Reusable test data
 ├── docs/                       # Documentation
 │   └── DESIGN_DECISIONS.md     # Technology choices and trade-offs
-├── jest.config.ts              # Jest configuration
+├── jest.config.js              # Jest configuration (ESM)
 ├── tsconfig.json               # TypeScript configuration
 ├── CHANGELOG.md                # Version history
 └── README.md                   # This file
@@ -116,10 +116,10 @@ This framework demonstrates comprehensive GraphQL testing capabilities:
 
 | Test Category | Coverage | Status |
 |--------------|----------|--------|
-| **Query Testing** | 15-20 tests | 🔄 Planned |
+| **Query Testing** | 9 tests | ✅ Implemented |
 | **Mutation Testing** | 4-5 tests | 🔄 Planned |
 | **Schema Validation** | 5-6 tests | 🔄 Planned |
-| **Error Handling** | 5-6 tests | 🔄 Planned |
+| **Error Handling** | 3 tests | ✅ Implemented |
 | **Authentication** | 5-6 tests | 🔄 Planned |
 | **Performance** | 4-5 tests | 🔄 Planned |
 | **Total** | 40+ tests | 🔄 In Progress |
@@ -191,11 +191,10 @@ npm run test:watch
 npm run test:coverage
 
 # Run specific test file
-npm test countries-queries
-
-# Run tests in CI mode
-npm run test:ci
+npm test -- queryOpsForCountries
 ```
+
+> **Note:** Use `npm test` (not `npx jest`). The test script is configured with required Node.js flags for ESM support. See [DESIGN_DECISIONS.md](docs/DESIGN_DECISIONS.md#3-jest-esm-configuration) for details.
 
 ---
 
@@ -224,18 +223,19 @@ This project is **Project 2** in a 5-project SDET portfolio:
 
 ## 🔄 Project Status
 
-**Current Phase:** Initial Setup (v0.1.0)
+**Current Phase:** Query Operations (v0.2.0)
 - ✅ Project structure created
 - ✅ Dependencies installed
-- ✅ Jest + TypeScript configured
+- ✅ Jest + TypeScript + ESM configured
 - ✅ Design decisions documented
-- 🔄 Test implementation in progress
+- ✅ Countries API query tests implemented (9 tests)
+- 🔄 Additional test coverage in progress
 
 **Next Steps:**
-- Implement GraphQL client wrapper
-- Write Countries API query tests
+- Add mutation tests with mock server
 - Set up CI/CD pipeline
 - Add schema validation tests
+- Add authentication tests for GitHub API
 
 ---
 
@@ -255,7 +255,34 @@ Purpose-built for testing scenarios. 28x smaller package size (5KB vs 140KB), cl
 
 See [CHANGELOG.md](CHANGELOG.md) for detailed version history.
 
-**Current Version:** v0.1.0 - Initial Setup
+**Current Version:** v0.2.0 - Query Operations
+
+---
+
+## ⚙️ Jest Configuration
+
+This project uses Jest with TypeScript in ESM (ECMAScript Modules) mode. Key configuration details:
+
+| Setting | Value | Purpose |
+|---------|-------|---------|
+| **Config File** | `jest.config.js` | ESM-compatible JavaScript config |
+| **Preset** | `ts-jest/presets/default-esm` | TypeScript + ESM support |
+| **Test Runner** | `node --experimental-vm-modules` | Required for ESM in Jest |
+| **Transform** | `ts-jest` with `useESM: true` | Compiles TypeScript to ESM |
+
+```javascript
+// jest.config.js
+export default {
+  preset: 'ts-jest/presets/default-esm',
+  testEnvironment: 'node',
+  extensionsToTreatAsEsm: ['.ts'],
+  transform: {
+    '^.+\\.tsx?$': ['ts-jest', { useESM: true }]
+  }
+};
+```
+
+> See [DESIGN_DECISIONS.md](docs/DESIGN_DECISIONS.md#3-jest-esm-configuration) for the full rationale behind these choices.
 
 ---
 
@@ -273,4 +300,4 @@ This project is part of a professional portfolio and is available for review and
 
 ---
 
-*Last Updated: January 14, 2026*
+*Last Updated: January 25, 2026*
