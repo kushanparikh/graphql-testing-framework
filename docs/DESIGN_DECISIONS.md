@@ -2,7 +2,7 @@
 
 **Project:** GraphQL API Testing Suite (Portfolio Project 2)  
 **Purpose:** Document technology choices and trade-offs  
-**Last Updated:** January 14, 2026
+**Last Updated:** January 25, 2026
 
 ---
 
@@ -21,6 +21,7 @@ This document captures the "why" behind major technology and architectural decis
 
 1. [Testing Framework: Jest vs Vitest vs Playwright](#1-testing-framework-jest-vs-vitest-vs-playwright)
 2. [GraphQL Client: graphql-request vs Apollo Client](#2-graphql-client-graphql-request-vs-apollo-client)
+3. [Jest ESM Configuration](#3-jest-esm-configuration)
 
 ---
 
@@ -239,4 +240,175 @@ expect(data.user.name).toBe('John');
 
 ---
 
-*Last Updated: January 14, 2026*
+## 3. Jest ESM Configuration
+
+### Decision: **ESM with experimental-vm-modules**
+
+### The Problem
+
+This project uses modern TypeScript with ESM (ECMAScript Modules) as configured in `package.json`:
+
+```json
+{
+  "type": "module"
+}
+```
+
+Combined with `tsconfig.json` settings:
+
+```json
+{
+  "compilerOptions": {
+    "module": "nodenext",
+    "verbatimModuleSyntax": true
+  }
+}
+```
+
+These settings enable modern ESM syntax but create compatibility challenges with Jest, which historically uses CommonJS.
+
+---
+
+### Issues Encountered and Solutions
+
+#### Issue 1: TypeScript Config File Parsing Error
+
+**Error:**
+```
+Jest: Failed to parse the TypeScript config file jest.config.ts
+TSError: ECMAScript imports and exports cannot be written in a CommonJS file
+under 'verbatimModuleSyntax'.
+```
+
+**Root Cause:**
+When `verbatimModuleSyntax: true` is set in `tsconfig.json`, TypeScript enforces that ESM imports/exports can only exist in files explicitly marked as ESM. Jest uses `ts-node` to parse `jest.config.ts`, but `ts-node` was treating the file as CommonJS.
+
+**Solution:**
+Changed the config file from `jest.config.ts` to `jest.config.js` with ESM syntax:
+
+```javascript
+// jest.config.js (ESM)
+/** @type {import('jest').Config} */
+export default {
+  preset: 'ts-jest/presets/default-esm',
+  // ...
+};
+```
+
+**Why `.js` instead of `.mts`?**
+- `.js` files in an ESM package (with `"type": "module"`) are automatically treated as ESM
+- Avoids additional TypeScript compilation step for config
+- Simpler toolchain with fewer moving parts
+
+---
+
+#### Issue 2: Cannot Use Import Statement Outside a Module
+
+**Error:**
+```
+SyntaxError: Cannot use import statement outside a module
+```
+
+**Root Cause:**
+Jest's default runtime doesn't support ESM. Even with `"type": "module"` in `package.json`, Jest needs explicit ESM mode enablement.
+
+**Solution:**
+Enable Node.js experimental VM modules flag in `package.json`:
+
+```json
+{
+  "scripts": {
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
+    "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage"
+  }
+}
+```
+
+**Why this approach?**
+- `--experimental-vm-modules` enables Jest's ESM support
+- Direct path to Jest binary ensures the flag is passed correctly
+- Standard `jest` CLI doesn't accept Node flags
+
+---
+
+#### Issue 3: Why `npm test` Works But `npx jest` Doesn't
+
+**Explanation:**
+
+| Command | What It Does | Result |
+|---------|--------------|--------|
+| `npm test` | Runs the `"test"` script from `package.json` | Works - includes `--experimental-vm-modules` flag |
+| `npx jest` | Directly executes Jest binary | Fails - no ESM flag passed |
+| `npx test` | Tries to find a package called "test" | Fails - no such package exists |
+
+**Key Insight:**
+`npx` runs **packages**, not npm scripts. `npm test` (or `npm run test`) runs **scripts** defined in `package.json`.
+
+To run Jest directly with ESM support without using npm scripts:
+```bash
+node --experimental-vm-modules node_modules/jest/bin/jest.js
+```
+
+---
+
+### Final Configuration
+
+#### jest.config.js
+```javascript
+/** @type {import('jest').Config} */
+export default {
+  preset: 'ts-jest/presets/default-esm',
+  testEnvironment: 'node',
+  roots: ['<rootDir>/tests'],
+  testMatch: ['**/*.test.ts'],
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
+  extensionsToTreatAsEsm: ['.ts'],
+  transform: {
+    '^.+\\.tsx?$': [
+      'ts-jest',
+      {
+        useESM: true,
+        tsconfig: {
+          verbatimModuleSyntax: false
+        }
+      }
+    ]
+  },
+  moduleNameMapper: {
+    '^(\\.{1,2}/.*)\\.js$': '$1'
+  }
+};
+```
+
+**Key Settings Explained:**
+
+| Setting | Purpose |
+|---------|---------|
+| `preset: 'ts-jest/presets/default-esm'` | Base configuration for TypeScript + ESM |
+| `extensionsToTreatAsEsm: ['.ts']` | Tells Jest to treat `.ts` files as ESM |
+| `transform.useESM: true` | Configures ts-jest to output ESM |
+| `tsconfig.verbatimModuleSyntax: false` | Overrides tsconfig for test compilation to avoid import/export errors |
+| `moduleNameMapper` | Handles `.js` extension in imports (TypeScript ESM convention) |
+
+---
+
+### Trade-offs
+
+**What We Sacrifice:**
+- Simple `npx jest` command doesn't work
+- Experimental Node.js feature (may change in future)
+- Slightly more complex configuration
+
+**What We Gain:**
+- Modern ESM syntax throughout the codebase
+- Consistent module system (no CJS/ESM mixing)
+- Future-proof setup (ESM is the standard going forward)
+- Better alignment with modern TypeScript practices
+
+**Engineering Decision:**
+ESM is the future of JavaScript modules. While the configuration is more complex today, it ensures the codebase follows modern standards and avoids the CommonJS/ESM interop issues that plague many projects.
+
+---
+
+*Last Updated: January 25, 2026*
