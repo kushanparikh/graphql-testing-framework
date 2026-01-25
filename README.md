@@ -8,8 +8,6 @@
 
 This project is a standalone GraphQL API testing framework built with TypeScript and Jest. It demonstrates comprehensive testing capabilities across multiple public GraphQL APIs, covering queries, mutations, schema validation, error handling, authentication, and performance testing.
 
-**Part of a 5-project SDET portfolio** targeting 160-200k automation engineering roles.
-
 ---
 
 ## 🚀 Tech Stack
