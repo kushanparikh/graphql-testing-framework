@@ -22,6 +22,7 @@ This document captures the "why" behind major technology and architectural decis
 1. [Testing Framework: Jest vs Vitest vs Playwright](#1-testing-framework-jest-vs-vitest-vs-playwright)
 2. [GraphQL Client: graphql-request vs Apollo Client](#2-graphql-client-graphql-request-vs-apollo-client)
 3. [Jest ESM Configuration](#3-jest-esm-configuration)
+4. [Test Organization Strategy](#4-test-organization-strategy)
 
 ---
 
@@ -408,6 +409,117 @@ export default {
 
 **Engineering Decision:**
 ESM is the future of JavaScript modules. While the configuration is more complex today, it ensures the codebase follows modern standards and avoids the CommonJS/ESM interop issues that plague many projects.
+
+---
+
+## 4. Test Organization Strategy
+
+### Decision: **API-specific directories with operation-type files**
+
+### The Structure
+
+```
+tests/
+├── countries/
+│   └── queryOpsForCountries.test.ts
+└── spaceX/
+    ├── queryOpsForSpaceX.test.ts
+    └── mutationOpsForSpaceX.test.ts
+```
+
+### Why This Structure?
+
+#### 1. API-Specific Directories
+
+Each GraphQL API gets its own directory because:
+
+- **Different schemas**: Each API has unique types, queries, and mutations
+- **Different behaviors**: Countries API is read-only; SpaceX has mutations (even if disabled)
+- **Independent test runs**: Can run `npm test -- countries` to test only one API
+- **Clear ownership**: Easy to find all tests related to a specific API
+
+#### 2. Operation-Type Files
+
+Separating queries and mutations into different files because:
+
+- **Different testing patterns**: Queries are idempotent; mutations may have side effects
+- **Different error handling**: Query errors vs mutation validation errors
+- **Logical grouping**: All query tests together, all mutation tests together
+- **Smaller files**: Easier to read and maintain
+
+### Naming Convention
+
+| Pattern | Example | Purpose |
+|---------|---------|---------|
+| `queryOpsFor<API>.test.ts` | `queryOpsForSpaceX.test.ts` | Query operation tests |
+| `mutationOpsFor<API>.test.ts` | `mutationOpsForSpaceX.test.ts` | Mutation operation tests |
+| `schemaFor<API>.test.ts` | `schemaForSpaceX.test.ts` | Schema introspection tests (planned) |
+
+### Documentation Standards
+
+Each test file includes a JSDoc header documenting:
+
+```typescript
+/**
+ * <API Name> API <Operation Type> Tests
+ *
+ * API: <endpoint URL>
+ *
+ * <Description of what the API provides>
+ *
+ * Test Coverage:
+ * - <List of test scenarios>
+ *
+ * @see <Link to API documentation or schema explorer>
+ */
+```
+
+**Why JSDoc?**
+- Self-documenting code
+- IDE tooltip support
+- Generates documentation if needed
+- Clear context for each test file
+
+---
+
+### SpaceX API Mutation Behavior
+
+The SpaceX public API exposes mutation fields in its schema:
+- `insert_users`
+- `update_users`
+- `delete_users`
+
+However, these mutations return `null` when executed, indicating they are disabled for public access.
+
+**Testing Approach:**
+Rather than skipping these tests, we:
+1. Execute the mutations with correct Hasura syntax
+2. Assert they return `null`
+3. Document the behavior in test names and comments
+
+**Why Test Disabled Mutations?**
+
+| Reason | Benefit |
+|--------|---------|
+| **Demonstrates syntax knowledge** | Shows understanding of Hasura-style mutations |
+| **Documents API behavior** | Tests serve as documentation |
+| **Detects API changes** | If mutations become enabled, tests will fail (alerting us) |
+| **Complete coverage** | Tests all available schema operations |
+
+---
+
+### Trade-offs
+
+**What We Sacrifice:**
+- More files to manage
+- Deeper directory structure
+
+**What We Gain:**
+- Clear organization by API
+- Easy to run specific test subsets
+- Separation of concerns (queries vs mutations)
+- Self-documenting structure
+- Scalable as more APIs are added
 
 ---
 

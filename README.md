@@ -79,48 +79,41 @@ npm test
 graphql-api-testing-suite/
 ├── tests/                      # Test specifications
 │   ├── countries/              # Countries API tests
-│   ├── spacex/                 # SpaceX API tests
-│   ├── rickandmorty/           # Rick and Morty API tests
-│   ├── github/                 # GitHub API tests (auth)
-│   ├── mutations/              # Mutation tests (mock server)
-│   ├── schema/                 # Schema validation tests
-│   ├── errors/                 # Error handling tests
-│   └── performance/            # Performance benchmark tests
-├── utils/                      # Utility functions
-│   ├── graphql-client.ts       # GraphQL client wrapper
-│   └── performance.ts          # Performance testing utilities
-├── types/                      # TypeScript type definitions
-│   ├── countries.types.ts      # Countries API types
-│   ├── spacex.types.ts         # SpaceX API types
-│   └── github.types.ts         # GitHub API types
-├── config/                     # Configuration files
-│   ├── endpoints.ts            # API endpoint configuration
-│   └── auth.ts                 # Authentication configuration
-├── fixtures/                   # Test data and fixtures
-│   └── test-data.ts            # Reusable test data
+│   │   └── queryOpsForCountries.test.ts
+│   └── spaceX/                 # SpaceX API tests
+│       ├── queryOpsForSpaceX.test.ts
+│       └── mutationOpsForSpaceX.test.ts
 ├── docs/                       # Documentation
 │   └── DESIGN_DECISIONS.md     # Technology choices and trade-offs
 ├── jest.config.js              # Jest configuration (ESM)
 ├── tsconfig.json               # TypeScript configuration
+├── package.json                # Dependencies and scripts
 ├── CHANGELOG.md                # Version history
 └── README.md                   # This file
 ```
 
 ---
 
-## 🧪 Test Coverage Goals
+## 🧪 Test Coverage
 
 This framework demonstrates comprehensive GraphQL testing capabilities:
 
-| Test Category | Coverage | Status |
-|--------------|----------|--------|
-| **Query Testing** | 9 tests | ✅ Implemented |
-| **Mutation Testing** | 4-5 tests | 🔄 Planned |
-| **Schema Validation** | 5-6 tests | 🔄 Planned |
-| **Error Handling** | 3 tests | ✅ Implemented |
-| **Authentication** | 5-6 tests | 🔄 Planned |
-| **Performance** | 4-5 tests | 🔄 Planned |
-| **Total** | 40+ tests | 🔄 In Progress |
+| API | Test File | Tests | Description |
+|-----|-----------|-------|-------------|
+| **Countries** | `queryOpsForCountries.test.ts` | 9 | Query operations, variables, nested data, filtering, error handling |
+| **SpaceX** | `queryOpsForSpaceX.test.ts` | 1 | Paginated queries with limit argument |
+| **SpaceX** | `mutationOpsForSpaceX.test.ts` | 3 | Hasura-style mutations (insert, update, delete) |
+| **Total** | | **13** | |
+
+### Test Categories
+
+| Category | Status | Details |
+|----------|--------|---------|
+| **Query Operations** | ✅ Implemented | Basic queries, variables, nested objects, arrays, filtering |
+| **Mutation Operations** | ✅ Implemented | Hasura-style CRUD mutations (API returns null - read-only) |
+| **Error Handling** | ✅ Implemented | Invalid inputs, syntax errors, missing variables |
+| **Schema Validation** | 🔄 Planned | Introspection queries |
+| **Authentication** | 🔄 Planned | GitHub API with JWT tokens |
 
 ---
 
@@ -154,25 +147,19 @@ This framework demonstrates comprehensive GraphQL testing capabilities:
 
 This framework tests against multiple public GraphQL APIs:
 
-1. **Countries API** - https://countries.trevorblades.com/
-   - Basic queries and filtering
-   - Schema validation
-   - No authentication required
+### Currently Implemented
 
-2. **SpaceX API** - https://spacex-production.up.railway.app/
-   - Complex nested queries
-   - Pagination patterns
-   - Historical data validation
+| API | Endpoint | Features Tested |
+|-----|----------|-----------------|
+| **Countries API** | https://countries.trevorblades.com/ | Queries, variables, nested data, filtering, error handling |
+| **SpaceX API** | https://spacex-production.up.railway.app/ | Paginated queries, Hasura-style mutations |
 
-3. **Rick and Morty API** - https://rickandmortyapi.com/graphql
-   - Fragment usage
-   - Multiple query patterns
-   - Advanced filtering
+### Planned
 
-4. **GitHub GraphQL API** - https://api.github.com/graphql
-   - Authentication with JWT tokens
-   - Real-world enterprise patterns
-   - Rate limiting validation
+| API | Endpoint | Planned Coverage |
+|-----|----------|------------------|
+| **Rick and Morty API** | https://rickandmortyapi.com/graphql | Fragments, advanced filtering |
+| **GitHub GraphQL API** | https://api.github.com/graphql | Authentication, rate limiting |
 
 ---
 
@@ -221,16 +208,18 @@ This project is **Project 2** in a 5-project SDET portfolio:
 
 ## 🔄 Project Status
 
-**Current Phase:** Query Operations (v0.2.0)
-- ✅ Project structure created
+**Current Phase:** Query & Mutation Operations (v0.3.0)
+- ✅ Project structure created with API-specific test directories
 - ✅ Dependencies installed
 - ✅ Jest + TypeScript + ESM configured
 - ✅ Design decisions documented
-- ✅ Countries API query tests implemented (9 tests)
-- 🔄 Additional test coverage in progress
+- ✅ Countries API tests implemented (9 tests)
+- ✅ SpaceX API query tests implemented (1 test)
+- ✅ SpaceX API mutation tests implemented (3 tests)
+- ✅ JSDoc documentation added to all test files
 
 **Next Steps:**
-- Add mutation tests with mock server
+- Add more SpaceX query tests (rockets, capsules, launchpads)
 - Set up CI/CD pipeline
 - Add schema validation tests
 - Add authentication tests for GitHub API
@@ -253,7 +242,7 @@ Purpose-built for testing scenarios. 28x smaller package size (5KB vs 140KB), cl
 
 See [CHANGELOG.md](CHANGELOG.md) for detailed version history.
 
-**Current Version:** v0.2.0 - Query Operations
+**Current Version:** v0.3.0 - Query & Mutation Operations
 
 ---
 
