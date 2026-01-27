@@ -81,11 +81,15 @@ graphql-api-testing-suite/
 ├── tests/                      # Test specifications
 │   ├── countries/              # Countries API tests
 │   │   └── queryOpsForCountries.test.ts
-│   └── spaceX/                 # SpaceX API tests
-│       ├── queryOpsForSpaceX.test.ts
-│       └── mutationOpsForSpaceX.test.ts
+│   ├── spaceX/                 # SpaceX API tests
+│   │   ├── queryOpsForSpaceX.test.ts
+│   │   └── mutationOpsForSpaceX.test.ts
+│   └── schema/                 # Schema validation tests
+│       ├── countries-schema.test.ts
+│       └── spacex-schema.test.ts
 ├── utils/                      # Utility modules
-│   └── graphql-client.ts       # GraphQLTestClient wrapper
+│   ├── graphql-client.ts       # GraphQLTestClient wrapper
+│   └── schema-introspection.ts # Schema introspection utilities
 ├── docs/                       # Documentation
 │   └── DESIGN_DECISIONS.md     # Technology choices and trade-offs
 ├── jest.config.js              # Jest configuration (ESM)
@@ -104,9 +108,11 @@ This framework demonstrates comprehensive GraphQL testing capabilities:
 | API | Test File | Tests | Description |
 |-----|-----------|-------|-------------|
 | **Countries** | `queryOpsForCountries.test.ts` | 10 | Query operations, variables, nested data, filtering, performance, error handling |
+| **Countries** | `countries-schema.test.ts` | 25 | Schema validation: types, fields, relationships, queries |
 | **SpaceX** | `queryOpsForSpaceX.test.ts` | 3 | Paginated queries, response metadata, performance measurement |
 | **SpaceX** | `mutationOpsForSpaceX.test.ts` | 3 | Hasura-style mutations (insert, update, delete) |
-| **Total** | | **16** | |
+| **SpaceX** | `spacex-schema.test.ts` | 27 | Schema validation: types, fields, queries, mutations, relationships |
+| **Total** | | **68** | |
 
 ### Test Categories
 
@@ -117,7 +123,7 @@ This framework demonstrates comprehensive GraphQL testing capabilities:
 | **Error Handling** | ✅ Implemented | Invalid inputs, syntax errors, missing variables |
 | **Performance Testing** | ✅ Implemented | Query timing with `measureQuery()` |
 | **Response Validation** | ✅ Implemented | Status codes, content-type headers via `rawRequest()` |
-| **Schema Validation** | 🔄 Planned | Introspection queries |
+| **Schema Validation** | ✅ Implemented | Type existence, field validation, relationships via introspection |
 | **Authentication** | 🔄 Planned | GitHub API with JWT tokens |
 
 ### GraphQLTestClient Wrapper Methods
@@ -133,6 +139,21 @@ The framework includes a custom `GraphQLTestClient` wrapper that provides specia
 | `batchRequests()` | Multiple queries at once | Array of data |
 | `setHeaders()` | Dynamic header updates | void |
 | `setAuthToken()` | Authentication testing | void |
+
+### Schema Introspection Utilities
+
+The framework includes `utils/schema-introspection.ts` for validating GraphQL schemas:
+
+| Function | Purpose | Returns |
+|----------|---------|---------|
+| `getSchemaTypes()` | List all types in schema | `string[]` |
+| `getTypeDetails()` | Get type kind, fields, metadata | `TypeDetails` |
+| `getTypeFields()` | Get field names for a type | `string[]` |
+| `getFieldInfo()` | Get specific field details | `FieldInfo` |
+| `getAvailableQueries()` | List query operations | `string[]` |
+| `getAvailableMutations()` | List mutation operations | `string[]` |
+| `typeExists()` | Check if type exists | `boolean` |
+| `getTypeKind()` | Get type kind (OBJECT, SCALAR, etc.) | `string` |
 
 ---
 
@@ -227,7 +248,7 @@ This project is **Project 2** in a 5-project SDET portfolio:
 
 ## 🔄 Project Status
 
-**Current Phase:** GraphQL Test Client Wrapper (v0.4.0)
+**Current Phase:** Schema Validation (v0.5.0)
 - ✅ Project structure created with API-specific test directories
 - ✅ Dependencies installed
 - ✅ Jest + TypeScript + ESM configured
@@ -239,11 +260,12 @@ This project is **Project 2** in a 5-project SDET portfolio:
 - ✅ GraphQLTestClient wrapper implemented with multiple testing methods
 - ✅ Performance measurement tests added
 - ✅ Response metadata validation tests added
+- ✅ Schema introspection utilities created
+- ✅ Countries API schema tests implemented (25 tests)
+- ✅ SpaceX API schema tests implemented (27 tests)
 
 **Next Steps:**
-- Add more SpaceX query tests (rockets, capsules, launchpads)
 - Set up CI/CD pipeline
-- Add schema validation tests
 - Add authentication tests for GitHub API
 
 ---
@@ -264,7 +286,7 @@ Purpose-built for testing scenarios. 28x smaller package size (5KB vs 140KB), cl
 
 See [CHANGELOG.md](CHANGELOG.md) for detailed version history.
 
-**Current Version:** v0.4.0 - GraphQL Test Client Wrapper
+**Current Version:** v0.5.0 - Schema Validation
 
 ---
 

@@ -24,6 +24,7 @@ This document captures the "why" behind major technology and architectural decis
 3. [Jest ESM Configuration](#3-jest-esm-configuration)
 4. [Test Organization Strategy](#4-test-organization-strategy)
 5. [GraphQLTestClient Wrapper Design](#5-graphqltestclient-wrapper-design)
+6. [Schema Introspection Utilities](#6-schema-introspection-utilities)
 
 ---
 
@@ -654,6 +655,135 @@ The wrapper accepts both to ensure compatibility across APIs.
 | `batchRequests()` | 0 tests* | 0% |
 
 *Not supported by current test APIs
+
+---
+
+## 6. Schema Introspection Utilities
+
+### Decision: **Reusable utility functions with caching strategy**
+
+### The Problem
+
+GraphQL schema validation requires introspection queries (`__schema`, `__type`) to extract schema metadata. Without a structured approach:
+- Each test makes individual API calls, risking rate limits
+- Complex type unwrapping logic is duplicated across tests
+- Tests become coupled to introspection query structure
+
+### Solution: Schema Introspection Utilities
+
+Created `utils/schema-introspection.ts` with reusable functions:
+
+| Function | Purpose | Returns |
+|----------|---------|---------|
+| `getSchemaTypes()` | List all types in schema | `string[]` |
+| `getTypeDetails()` | Get type kind, fields, metadata | `TypeDetails` |
+| `getTypeFields()` | Get field names for a type | `string[]` |
+| `getFieldInfo()` | Get specific field details | `FieldInfo` |
+| `getAvailableQueries()` | List query operations | `string[]` |
+| `getAvailableMutations()` | List mutation operations | `string[]` |
+| `typeExists()` | Check if type exists | `boolean` |
+| `getTypeKind()` | Get type kind (OBJECT, SCALAR, etc.) | `string` |
+
+---
+
+### Type Unwrapping Algorithm
+
+GraphQL types can be deeply nested with wrappers:
+- `NON_NULL` - Required field
+- `LIST` - Array type
+- Nested combinations like `[Language!]!` (required array of required Language)
+
+The utilities unwrap these to extract:
+- Base type name (e.g., `Language`)
+- `isRequired` flag
+- `isArray` flag
+
+**Example: Parsing `[Language!]!`**
+```
+NON_NULL → LIST → NON_NULL → Language
+   ↓        ↓        ↓         ↓
+isRequired  isArray  (inner)   typeName
+```
+
+The introspection query uses 4 levels of `ofType` nesting to handle all practical cases:
+```graphql
+type {
+  name
+  kind
+  ofType {
+    name
+    kind
+    ofType {
+      name
+      kind
+      ofType {
+        name
+        kind
+        ofType { name kind }
+      }
+    }
+  }
+}
+```
+
+---
+
+### Test Optimization Strategy
+
+**Problem**: Rate limiting on public GraphQL APIs (e.g., Countries API limits to 1 request per 20 seconds).
+
+**Solution**: Cache all type data in `beforeAll` using `Promise.all()`:
+
+```typescript
+beforeAll(async () => {
+  const [types, country, continent, query] = await Promise.all([
+    getSchemaTypes(client),
+    getTypeDetails(client, 'Country'),
+    getTypeDetails(client, 'Continent'),
+    getTypeDetails(client, 'Query'),
+  ]);
+
+  schemaTypes = types;
+  countryType = country;
+  // ... cache all type data
+});
+```
+
+**Benefits:**
+- All introspection calls happen in parallel
+- Single burst of API requests instead of one per test
+- Tests use cached data, avoiding rate limits
+- Faster test execution
+
+---
+
+### Schema Test Coverage
+
+| API | Tests | Coverage |
+|-----|-------|----------|
+| Countries | 25 | Types, fields, relationships, queries |
+| SpaceX | 27 | Types, fields, queries, mutations, nested relationships |
+
+**Test Categories:**
+- **Type Existence**: Verify expected types exist in schema
+- **Field Validation**: Check field presence, types, required/optional
+- **Relationship Testing**: Validate nested object relationships
+- **Query/Mutation Operations**: Verify available operations and return types
+
+---
+
+### Trade-offs
+
+**What We Sacrifice:**
+- Single point of failure (if introspection fails, all schema tests fail)
+- Cached data may become stale in long-running test sessions
+
+**What We Gain:**
+- Consistent introspection patterns across all schema tests
+- Rate limit compliance through batched requests
+- Reusable utilities for any GraphQL API
+- Clean separation of introspection logic from test assertions
+- Faster test execution through parallelized fetching
 
 ---
 
