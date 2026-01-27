@@ -1,4 +1,4 @@
-import { GraphQLTestClient } from './graphql-client.js';
+import { GraphQLTestClient } from './graphql-client.ts';
 
 /**
  * Schema Introspection Utilities

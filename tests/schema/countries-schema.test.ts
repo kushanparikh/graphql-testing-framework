@@ -1,10 +1,10 @@
-import { GraphQLTestClient } from '../../utils/graphql-client.js';
+import { GraphQLTestClient } from '../../utils/graphql-client.ts';
 import {
   getSchemaTypes,
   getTypeDetails,
   getAvailableQueries,
-  TypeDetails,
-} from '../../utils/schema-introspection.js';
+  type TypeDetails,
+} from '../../utils/schema-introspection.ts';
 import { describe, expect, test, beforeAll } from '@jest/globals';
 
 /**
