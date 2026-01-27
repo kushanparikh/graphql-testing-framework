@@ -1,4 +1,4 @@
-import { GraphQLClient } from 'graphql-request';
+import { GraphQLTestClient } from '../../utils/graphql-client.ts';
 import { describe, expect, test } from '@jest/globals';
 
 /**
@@ -12,7 +12,7 @@ import { describe, expect, test } from '@jest/globals';
  * and verify the API's behavior when mutations are attempted.
  */
 describe("Mutation Operations for SpaceX", () => {
-    const client = new GraphQLClient('https://spacex-production.up.railway.app/');
+    const client = new GraphQLTestClient('https://spacex-production.up.railway.app/');
 
     test("insert_users mutation returns null (mutations disabled)", async () => {
         const mutation = `
@@ -30,11 +30,11 @@ describe("Mutation Operations for SpaceX", () => {
             name: "Test User",
             rocket: "Falcon 9"
         };
-        const response = await client.rawRequest(mutation, variables);
 
-        // API returns 200 but insert_users is null (mutations disabled)
-        expect(response.status).toBe(200);
-        expect(response.data.insert_users).toBeNull();
+        // Using request() - only checking data, mutations return null on this API
+        const data = await client.request(mutation, variables);
+
+        expect(data.insert_users).toBeNull();
     });
 
     test("update_users mutation returns null (mutations disabled)", async () => {
@@ -48,10 +48,11 @@ describe("Mutation Operations for SpaceX", () => {
         const variables = {
             name: "Updated Name"
         };
-        const response = await client.rawRequest(mutation, variables);
 
-        expect(response.status).toBe(200);
-        expect(response.data.update_users).toBeNull();
+        // Using request() - only checking data
+        const data = await client.request(mutation, variables);
+
+        expect(data.update_users).toBeNull();
     });
 
     test("delete_users mutation returns null (mutations disabled)", async () => {
@@ -62,9 +63,10 @@ describe("Mutation Operations for SpaceX", () => {
                 }
             }
         `;
-        const response = await client.rawRequest(mutation);
 
-        expect(response.status).toBe(200);
-        expect(response.data.delete_users).toBeNull();
+        // Using request() - only checking data
+        const data = await client.request(mutation);
+
+        expect(data.delete_users).toBeNull();
     });
 });

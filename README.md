@@ -17,6 +17,7 @@ This project is a standalone GraphQL API testing framework built with TypeScript
 | **Language** | TypeScript | Type-safe test development |
 | **Testing Framework** | Jest | Industry-standard JavaScript testing |
 | **GraphQL Client** | graphql-request | Lightweight, testing-focused GraphQL client |
+| **Test Client Wrapper** | GraphQLTestClient | Custom wrapper with enhanced testing features |
 | **CI/CD** | GitHub Actions | Automated test execution |
 | **Coverage** | Jest Coverage | Code coverage reporting |
 
@@ -80,9 +81,15 @@ graphql-api-testing-suite/
 ├── tests/                      # Test specifications
 │   ├── countries/              # Countries API tests
 │   │   └── queryOpsForCountries.test.ts
-│   └── spaceX/                 # SpaceX API tests
-│       ├── queryOpsForSpaceX.test.ts
-│       └── mutationOpsForSpaceX.test.ts
+│   ├── spaceX/                 # SpaceX API tests
+│   │   ├── queryOpsForSpaceX.test.ts
+│   │   └── mutationOpsForSpaceX.test.ts
+│   └── schema/                 # Schema validation tests
+│       ├── countries-schema.test.ts
+│       └── spacex-schema.test.ts
+├── utils/                      # Utility modules
+│   ├── graphql-client.ts       # GraphQLTestClient wrapper
+│   └── schema-introspection.ts # Schema introspection utilities
 ├── docs/                       # Documentation
 │   └── DESIGN_DECISIONS.md     # Technology choices and trade-offs
 ├── jest.config.js              # Jest configuration (ESM)
@@ -100,10 +107,12 @@ This framework demonstrates comprehensive GraphQL testing capabilities:
 
 | API | Test File | Tests | Description |
 |-----|-----------|-------|-------------|
-| **Countries** | `queryOpsForCountries.test.ts` | 9 | Query operations, variables, nested data, filtering, error handling |
-| **SpaceX** | `queryOpsForSpaceX.test.ts` | 1 | Paginated queries with limit argument |
+| **Countries** | `queryOpsForCountries.test.ts` | 10 | Query operations, variables, nested data, filtering, performance, error handling |
+| **Countries** | `countries-schema.test.ts` | 25 | Schema validation: types, fields, relationships, queries |
+| **SpaceX** | `queryOpsForSpaceX.test.ts` | 3 | Paginated queries, response metadata, performance measurement |
 | **SpaceX** | `mutationOpsForSpaceX.test.ts` | 3 | Hasura-style mutations (insert, update, delete) |
-| **Total** | | **13** | |
+| **SpaceX** | `spacex-schema.test.ts` | 27 | Schema validation: types, fields, queries, mutations, relationships |
+| **Total** | | **68** | |
 
 ### Test Categories
 
@@ -112,8 +121,39 @@ This framework demonstrates comprehensive GraphQL testing capabilities:
 | **Query Operations** | ✅ Implemented | Basic queries, variables, nested objects, arrays, filtering |
 | **Mutation Operations** | ✅ Implemented | Hasura-style CRUD mutations (API returns null - read-only) |
 | **Error Handling** | ✅ Implemented | Invalid inputs, syntax errors, missing variables |
-| **Schema Validation** | 🔄 Planned | Introspection queries |
+| **Performance Testing** | ✅ Implemented | Query timing with `measureQuery()` |
+| **Response Validation** | ✅ Implemented | Status codes, content-type headers via `rawRequest()` |
+| **Schema Validation** | ✅ Implemented | Type existence, field validation, relationships via introspection |
 | **Authentication** | 🔄 Planned | GitHub API with JWT tokens |
+
+### GraphQLTestClient Wrapper Methods
+
+The framework includes a custom `GraphQLTestClient` wrapper that provides specialized methods for different testing scenarios:
+
+| Method | Use Case | Returns |
+|--------|----------|---------|
+| `request()` | Data-only tests (90% of cases) | Just the data |
+| `rawRequest()` | Need headers, status, metadata | Full response with auto-validation |
+| `requestExpectingError()` | Negative/error tests | void (asserts throw) |
+| `measureQuery()` | Performance testing | `{ data, time }` in milliseconds |
+| `batchRequests()` | Multiple queries at once | Array of data |
+| `setHeaders()` | Dynamic header updates | void |
+| `setAuthToken()` | Authentication testing | void |
+
+### Schema Introspection Utilities
+
+The framework includes `utils/schema-introspection.ts` for validating GraphQL schemas:
+
+| Function | Purpose | Returns |
+|----------|---------|---------|
+| `getSchemaTypes()` | List all types in schema | `string[]` |
+| `getTypeDetails()` | Get type kind, fields, metadata | `TypeDetails` |
+| `getTypeFields()` | Get field names for a type | `string[]` |
+| `getFieldInfo()` | Get specific field details | `FieldInfo` |
+| `getAvailableQueries()` | List query operations | `string[]` |
+| `getAvailableMutations()` | List mutation operations | `string[]` |
+| `typeExists()` | Check if type exists | `boolean` |
+| `getTypeKind()` | Get type kind (OBJECT, SCALAR, etc.) | `string` |
 
 ---
 
@@ -208,20 +248,24 @@ This project is **Project 2** in a 5-project SDET portfolio:
 
 ## 🔄 Project Status
 
-**Current Phase:** Query & Mutation Operations (v0.3.0)
+**Current Phase:** Schema Validation (v0.5.0)
 - ✅ Project structure created with API-specific test directories
 - ✅ Dependencies installed
 - ✅ Jest + TypeScript + ESM configured
 - ✅ Design decisions documented
-- ✅ Countries API tests implemented (9 tests)
-- ✅ SpaceX API query tests implemented (1 test)
+- ✅ Countries API tests implemented (10 tests)
+- ✅ SpaceX API query tests implemented (3 tests)
 - ✅ SpaceX API mutation tests implemented (3 tests)
 - ✅ JSDoc documentation added to all test files
+- ✅ GraphQLTestClient wrapper implemented with multiple testing methods
+- ✅ Performance measurement tests added
+- ✅ Response metadata validation tests added
+- ✅ Schema introspection utilities created
+- ✅ Countries API schema tests implemented (25 tests)
+- ✅ SpaceX API schema tests implemented (27 tests)
 
 **Next Steps:**
-- Add more SpaceX query tests (rockets, capsules, launchpads)
 - Set up CI/CD pipeline
-- Add schema validation tests
 - Add authentication tests for GitHub API
 
 ---
@@ -242,7 +286,7 @@ Purpose-built for testing scenarios. 28x smaller package size (5KB vs 140KB), cl
 
 See [CHANGELOG.md](CHANGELOG.md) for detailed version history.
 
-**Current Version:** v0.3.0 - Query & Mutation Operations
+**Current Version:** v0.5.0 - Schema Validation
 
 ---
 
@@ -287,4 +331,4 @@ This project is part of a professional portfolio and is available for review and
 
 ---
 
-*Last Updated: January 25, 2026*
+*Last Updated: January 26, 2026*

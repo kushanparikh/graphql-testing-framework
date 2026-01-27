@@ -1,4 +1,4 @@
-import { GraphQLClient } from 'graphql-request';
+import { GraphQLTestClient } from '../../utils/graphql-client.ts';
 import { describe, expect, test } from '@jest/globals';
 
 /**
@@ -22,7 +22,7 @@ import { describe, expect, test } from '@jest/globals';
  */
 
 describe("Query Operations for Countries - Success", () => {
-  const client = new GraphQLClient('https://countries.trevorblades.com/');
+  const client = new GraphQLTestClient('https://countries.trevorblades.com/');
 
   test('Should be able to retrieve country details from country code', async () => {
     // Request Query creation
@@ -61,11 +61,11 @@ describe("Query Operations for Countries - Success", () => {
     }
   `;
 
-    const response = await client.rawRequest(query);
+    // Using request() - returns data only, no response metadata needed
+    const data = await client.request(query);
 
-    expect(response.status).toBe(200);
-    expect(response.data.country.currency).toContain('USD');
-    expect(response.data.country.emoji).toBe('🇺🇸');
+    expect(data.country.currency).toContain('USD');
+    expect(data.country.emoji).toBe('🇺🇸');
   });
 
   test('should use variables', async () => {
@@ -80,10 +80,10 @@ describe("Query Operations for Countries - Success", () => {
 
     const variables = { code: 'CA' };
 
-    const response = await client.rawRequest(query, variables);
+    // Using request() with variables - data only
+    const data = await client.request(query, variables);
 
-    expect(response.status).toBe(200);
-    expect(response.data.country.name).toBe('Canada');
+    expect(data.country.name).toBe('Canada');
   });
 
   test('should fetch nested data', async () => {
@@ -99,10 +99,11 @@ describe("Query Operations for Countries - Success", () => {
     }
   `;
 
-    const response = await client.rawRequest(query);
+    // Using request() for nested data - data only
+    const data = await client.request(query);
 
-    expect(response.data.country.continent.name).toBe('North America');
-    expect(response.data.country.continent.code).toBe('NA');
+    expect(data.country.continent.name).toBe('North America');
+    expect(data.country.continent.code).toBe('NA');
   });
 
   test('should handle arrays', async () => {
@@ -115,11 +116,11 @@ describe("Query Operations for Countries - Success", () => {
     }
   `;
 
-    const response = await client.rawRequest(query);
+    // Using request() for array data - data only
+    const data = await client.request(query);
 
-    expect(response.status).toBe(200);
-    expect(Array.isArray(response.data.countries)).toBe(true);
-    expect(response.data.countries.length).toBeGreaterThan(0);
+    expect(Array.isArray(data.countries)).toBe(true);
+    expect(data.countries.length).toBeGreaterThan(0);
   });
 
   test('should filter with variables', async () => {
@@ -134,16 +135,38 @@ describe("Query Operations for Countries - Success", () => {
 
     const variables = { continentCode: 'EU' };
 
-    const response = await client.rawRequest(query, variables);
+    // Using request() with filter variables - data only
+    const data = await client.request(query, variables);
 
-    expect(response.data.countries.length).toBeGreaterThan(0);
+    expect(data.countries.length).toBeGreaterThan(0);
     // All countries should be in Europe
-    expect(response.data.countries.every((c: any) => c.code)).toBeTruthy();
+    expect(data.countries.every((c: any) => c.code)).toBeTruthy();
   });
+
+  test('should measure query performance', async () => {
+    const query = `
+    query {
+      country(code: "US") {
+        name
+        capital
+      }
+    }
+  `;
+
+    // Using measureQuery() for performance testing
+    const { data, time } = await client.measureQuery(query);
+
+    expect(data.country.name).toBe('United States');
+    expect(time).toBeLessThan(2000); // Response under 2 seconds
+  });
+
+  // Note: batchRequests() is not supported by this API
+  // The Countries API returns: "Batch queries and APQ request are not currently supported"
+  // Use batchRequests() with APIs that support batching (e.g., Hasura, Apollo Server with batching enabled)
 })
 
 describe("Query Operations for Countries - Error", () => {
-  const client = new GraphQLClient('https://countries.trevorblades.com/');
+  const client = new GraphQLTestClient('https://countries.trevorblades.com/');
   test('should handle invalid country code', async () => {
     const query = `
     query {
@@ -153,12 +176,11 @@ describe("Query Operations for Countries - Error", () => {
     }
   `;
 
-    const response = await client.rawRequest(query);
+    // Using request() - only checking data, not response metadata
+    const data = await client.request(query);
 
-    // GraphQL returns 200 even for errors (not ideal but common)
-    expect(response.status).toBe(200);
-    // But data will be null
-    expect(response.data.country).toBeNull();
+    // GraphQL returns null for non-existent country
+    expect(data.country).toBeNull();
   });
 
   test('should handle syntax errors', async () => {
@@ -170,8 +192,8 @@ describe("Query Operations for Countries - Error", () => {
     }
   `;
 
-    // This will throw an error
-    await expect(client.rawRequest(query)).rejects.toThrow();
+    // This will throw an error - using wrapper's helper method
+    await client.requestExpectingError(query);
   });
 
   test('should handle missing required variables', async () => {
@@ -183,7 +205,7 @@ describe("Query Operations for Countries - Error", () => {
     }
   `;
 
-    // Don't pass variables
-    await expect(client.rawRequest(query)).rejects.toThrow();
+    // Don't pass variables - using wrapper's helper method
+    await client.requestExpectingError(query);
   });
 })

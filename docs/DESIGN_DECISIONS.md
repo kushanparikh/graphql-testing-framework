@@ -2,7 +2,7 @@
 
 **Project:** GraphQL API Testing Suite (Portfolio Project 2)  
 **Purpose:** Document technology choices and trade-offs  
-**Last Updated:** January 25, 2026
+**Last Updated:** January 26, 2026
 
 ---
 
@@ -23,6 +23,8 @@ This document captures the "why" behind major technology and architectural decis
 2. [GraphQL Client: graphql-request vs Apollo Client](#2-graphql-client-graphql-request-vs-apollo-client)
 3. [Jest ESM Configuration](#3-jest-esm-configuration)
 4. [Test Organization Strategy](#4-test-organization-strategy)
+5. [GraphQLTestClient Wrapper Design](#5-graphqltestclient-wrapper-design)
+6. [Schema Introspection Utilities](#6-schema-introspection-utilities)
 
 ---
 
@@ -523,4 +525,266 @@ Rather than skipping these tests, we:
 
 ---
 
-*Last Updated: January 25, 2026*
+## 5. GraphQLTestClient Wrapper Design
+
+### Decision: **Custom wrapper with specialized testing methods**
+
+### The Problem
+
+Raw `graphql-request` provides a simple API, but testing scenarios often require:
+- Repetitive status code validation
+- Content-type header checks
+- Error context when tests fail
+- Performance measurement
+- Different return types for different test needs
+
+### Solution: GraphQLTestClient Wrapper
+
+Created `utils/graphql-client.ts` with a `GraphQLTestClient` class that provides specialized methods for different testing scenarios.
+
+---
+
+### Method Selection Guide
+
+| Method | When to Use | Returns | Auto-Validations |
+|--------|-------------|---------|------------------|
+| `request()` | Most tests - just need data | Data only | None (trust the API) |
+| `rawRequest()` | Need headers/status/metadata | Full response | Status 200, JSON content-type |
+| `requestExpectingError()` | Testing error scenarios | void | Asserts throw |
+| `measureQuery()` | Performance testing | `{ data, time }` | None |
+| `batchRequests()` | Multiple queries at once | Array of data | None |
+
+---
+
+### Design Principles
+
+#### 1. Right Method for the Job
+
+**90% of tests** just need data - use `request()`:
+```typescript
+const data = await client.request(query);
+expect(data.country.name).toBe('United States');
+```
+
+**Full response validation** - use `rawRequest()`:
+```typescript
+const response = await client.rawRequest(query);
+// Wrapper already validated status=200 and content-type
+expect(response.headers).toBeDefined();
+```
+
+**Error testing** - use `requestExpectingError()`:
+```typescript
+await client.requestExpectingError(malformedQuery);
+// Cleaner than: await expect(...).rejects.toThrow()
+```
+
+**Performance testing** - use `measureQuery()`:
+```typescript
+const { data, time } = await client.measureQuery(query);
+expect(time).toBeLessThan(2000);
+```
+
+#### 2. Automatic Validations in rawRequest()
+
+The wrapper's `rawRequest()` method automatically validates:
+- HTTP status code is 200
+- Content-type is `application/json` or `application/graphql-response+json`
+
+This removes repetitive boilerplate from tests while ensuring basic response integrity.
+
+#### 3. Enhanced Error Context
+
+When requests fail, the wrapper provides detailed context:
+```
+GraphQL Error at https://api.example.com/graphql
+Query: query { country(code: "US") { name } }...
+Variables: {"code":"US"}
+Errors: Field 'name' not found on type 'Country'
+```
+
+This speeds up debugging by showing:
+- Which endpoint failed
+- What query was sent
+- What variables were used
+- What the actual error was
+
+---
+
+### API Compatibility Notes
+
+#### Batch Requests
+Some GraphQL APIs don't support batch requests:
+- **Countries API**: Returns "Batch queries and APQ request are not currently supported"
+- **SpaceX API**: Returns "Operation batching disabled"
+
+Tests document this with comments rather than skipped tests, as the `batchRequests()` method is still valuable for APIs that support it.
+
+#### Content-Type Variations
+Different GraphQL servers return different content-types:
+- Standard: `application/json`
+- GraphQL-over-HTTP spec: `application/graphql-response+json`
+
+The wrapper accepts both to ensure compatibility across APIs.
+
+---
+
+### Trade-offs
+
+**What We Sacrifice:**
+- Slight abstraction over raw graphql-request
+- Additional wrapper code to maintain
+
+**What We Gain:**
+- Consistent testing patterns across all test files
+- Reduced boilerplate in individual tests
+- Better error messages when tests fail
+- Built-in performance measurement
+- Clear method names that document intent
+
+---
+
+### Usage Statistics (Current Codebase)
+
+| Method | Usage Count | Percentage |
+|--------|-------------|------------|
+| `request()` | 10 tests | 62.5% |
+| `rawRequest()` | 2 tests | 12.5% |
+| `requestExpectingError()` | 2 tests | 12.5% |
+| `measureQuery()` | 2 tests | 12.5% |
+| `batchRequests()` | 0 tests* | 0% |
+
+*Not supported by current test APIs
+
+---
+
+## 6. Schema Introspection Utilities
+
+### Decision: **Reusable utility functions with caching strategy**
+
+### The Problem
+
+GraphQL schema validation requires introspection queries (`__schema`, `__type`) to extract schema metadata. Without a structured approach:
+- Each test makes individual API calls, risking rate limits
+- Complex type unwrapping logic is duplicated across tests
+- Tests become coupled to introspection query structure
+
+### Solution: Schema Introspection Utilities
+
+Created `utils/schema-introspection.ts` with reusable functions:
+
+| Function | Purpose | Returns |
+|----------|---------|---------|
+| `getSchemaTypes()` | List all types in schema | `string[]` |
+| `getTypeDetails()` | Get type kind, fields, metadata | `TypeDetails` |
+| `getTypeFields()` | Get field names for a type | `string[]` |
+| `getFieldInfo()` | Get specific field details | `FieldInfo` |
+| `getAvailableQueries()` | List query operations | `string[]` |
+| `getAvailableMutations()` | List mutation operations | `string[]` |
+| `typeExists()` | Check if type exists | `boolean` |
+| `getTypeKind()` | Get type kind (OBJECT, SCALAR, etc.) | `string` |
+
+---
+
+### Type Unwrapping Algorithm
+
+GraphQL types can be deeply nested with wrappers:
+- `NON_NULL` - Required field
+- `LIST` - Array type
+- Nested combinations like `[Language!]!` (required array of required Language)
+
+The utilities unwrap these to extract:
+- Base type name (e.g., `Language`)
+- `isRequired` flag
+- `isArray` flag
+
+**Example: Parsing `[Language!]!`**
+```
+NON_NULL → LIST → NON_NULL → Language
+   ↓        ↓        ↓         ↓
+isRequired  isArray  (inner)   typeName
+```
+
+The introspection query uses 4 levels of `ofType` nesting to handle all practical cases:
+```graphql
+type {
+  name
+  kind
+  ofType {
+    name
+    kind
+    ofType {
+      name
+      kind
+      ofType {
+        name
+        kind
+        ofType { name kind }
+      }
+    }
+  }
+}
+```
+
+---
+
+### Test Optimization Strategy
+
+**Problem**: Rate limiting on public GraphQL APIs (e.g., Countries API limits to 1 request per 20 seconds).
+
+**Solution**: Cache all type data in `beforeAll` using `Promise.all()`:
+
+```typescript
+beforeAll(async () => {
+  const [types, country, continent, query] = await Promise.all([
+    getSchemaTypes(client),
+    getTypeDetails(client, 'Country'),
+    getTypeDetails(client, 'Continent'),
+    getTypeDetails(client, 'Query'),
+  ]);
+
+  schemaTypes = types;
+  countryType = country;
+  // ... cache all type data
+});
+```
+
+**Benefits:**
+- All introspection calls happen in parallel
+- Single burst of API requests instead of one per test
+- Tests use cached data, avoiding rate limits
+- Faster test execution
+
+---
+
+### Schema Test Coverage
+
+| API | Tests | Coverage |
+|-----|-------|----------|
+| Countries | 25 | Types, fields, relationships, queries |
+| SpaceX | 27 | Types, fields, queries, mutations, nested relationships |
+
+**Test Categories:**
+- **Type Existence**: Verify expected types exist in schema
+- **Field Validation**: Check field presence, types, required/optional
+- **Relationship Testing**: Validate nested object relationships
+- **Query/Mutation Operations**: Verify available operations and return types
+
+---
+
+### Trade-offs
+
+**What We Sacrifice:**
+- Single point of failure (if introspection fails, all schema tests fail)
+- Cached data may become stale in long-running test sessions
+
+**What We Gain:**
+- Consistent introspection patterns across all schema tests
+- Rate limit compliance through batched requests
+- Reusable utilities for any GraphQL API
+- Clean separation of introspection logic from test assertions
+- Faster test execution through parallelized fetching
+
+---
+
+*Last Updated: January 26, 2026*
