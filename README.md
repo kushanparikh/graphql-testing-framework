@@ -232,17 +232,19 @@ npm test -- queryOpsForCountries
 
 ---
 
-## 🎯 Portfolio Context
+## 📊 Portfolio Project Tracking
 
-This project is **Project 2** in a 5-project SDET portfolio:
+This is **Project 2** of a 5-project SDET portfolio demonstrating modern test automation expertise.
 
-1. ✅ **Playwright + TypeScript Framework** - UI testing foundation
-2. 🔄 **GraphQL API Testing Suite** (This project) - Modern API patterns
-3. 📋 **gRPC Testing Harness** - Protocol buffer testing
-4. 📋 **Authentication Testing Framework** - OAuth, JWT, SAML
-5. 📋 **Unified Test Reporting Platform** - Cross-project result aggregation
+**View complete portfolio roadmap:**  
+[📖 SDET Portfolio Tracker - All 5 Projects](https://github.com/users/kushanparikh/projects/3/views/5?pane=info)
 
-**Portfolio Narrative:** Demonstrating versatile test automation expertise across UI, REST, GraphQL, and gRPC protocols, with modern TypeScript-based frameworks and CI/CD integration.
+**Portfolio Status:**
+- ✅ **Project 1**: Playwright + TypeScript Framework (Complete - 86 tests)
+- 🔨 **Project 2**: GraphQL API Testing Suite (In Progress - Week 2) ← *You are here*
+- 📋 **Project 3**: gRPC Testing Harness (Planned - Feb 2026)
+- 📋 **Project 4**: Authentication Testing Framework (Planned - Feb-Mar 2026)
+- 📋 **Project 5**: Unified Test Reporting Platform (Planned - Mar 2026
 
 ---
 
