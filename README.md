@@ -3,6 +3,8 @@
 **Portfolio Project 2:** Comprehensive GraphQL API testing framework demonstrating modern API testing expertise.
 
 ---
+###### 📖 New to this portfolio? visit: [Portfolio Overview](https://github.com/users/kushanparikh/projects/3/views/5?pane=info)
+---
 
 ## 🎯 Project Overview
 
