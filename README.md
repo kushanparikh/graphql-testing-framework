@@ -80,25 +80,27 @@ npm test
 
 ```
 graphql-api-testing-suite/
-├── tests/                      # Test specifications
-│   ├── countries/              # Countries API tests
-│   │   └── queryOpsForCountries.test.ts
-│   ├── spaceX/                 # SpaceX API tests
-│   │   ├── queryOpsForSpaceX.test.ts
-│   │   └── mutationOpsForSpaceX.test.ts
-│   └── schema/                 # Schema validation tests
+├── tests/                          # Test specifications
+│   ├── queryOpsForCountries.test.ts    # Countries API query tests
+│   ├── queryOpsForSpaceX.test.ts       # SpaceX API query tests
+│   ├── mutationOpsForSpaceX.test.ts    # SpaceX API mutation tests
+│   ├── errors/                         # Error handling tests
+│   │   └── error-handling.test.ts
+│   ├── performance/                    # Performance benchmarks
+│   │   └── performance.test.ts
+│   └── schema/                         # Schema validation tests
 │       ├── countries-schema.test.ts
 │       └── spacex-schema.test.ts
-├── utils/                      # Utility modules
-│   ├── graphql-client.ts       # GraphQLTestClient wrapper
-│   └── schema-introspection.ts # Schema introspection utilities
-├── docs/                       # Documentation
-│   └── DESIGN_DECISIONS.md     # Technology choices and trade-offs
-├── jest.config.js              # Jest configuration (ESM)
-├── tsconfig.json               # TypeScript configuration
-├── package.json                # Dependencies and scripts
-├── CHANGELOG.md                # Version history
-└── README.md                   # This file
+├── utils/                          # Utility modules
+│   ├── graphql-client.ts           # GraphQLTestClient wrapper
+│   └── schema-introspection.ts     # Schema introspection utilities
+├── docs/                           # Documentation
+│   └── DESIGN_DECISIONS.md         # Technology choices and trade-offs
+├── jest.config.js                  # Jest configuration (ESM)
+├── tsconfig.json                   # TypeScript configuration
+├── package.json                    # Dependencies and scripts
+├── CHANGELOG.md                    # Version history
+└── README.md                       # This file
 ```
 
 ---
@@ -107,14 +109,16 @@ graphql-api-testing-suite/
 
 This framework demonstrates comprehensive GraphQL testing capabilities:
 
-| API | Test File | Tests | Description |
-|-----|-----------|-------|-------------|
-| **Countries** | `queryOpsForCountries.test.ts` | 10 | Query operations, variables, nested data, filtering, performance, error handling |
-| **Countries** | `countries-schema.test.ts` | 25 | Schema validation: types, fields, relationships, queries |
-| **SpaceX** | `queryOpsForSpaceX.test.ts` | 3 | Paginated queries, response metadata, performance measurement |
-| **SpaceX** | `mutationOpsForSpaceX.test.ts` | 3 | Hasura-style mutations (insert, update, delete) |
-| **SpaceX** | `spacex-schema.test.ts` | 27 | Schema validation: types, fields, queries, mutations, relationships |
-| **Total** | | **68** | |
+| Category | Test File | Tests | Description |
+|----------|-----------|-------|-------------|
+| **Query Operations** | `queryOpsForCountries.test.ts` | 6 | Basic queries, variables, nested data, filtering |
+| **Query Operations** | `queryOpsForSpaceX.test.ts` | 2 | Paginated queries, response metadata |
+| **Mutation Operations** | `mutationOpsForSpaceX.test.ts` | 3 | Hasura-style mutations (insert, update, delete) |
+| **Error Handling** | `errors/error-handling.test.ts` | 7 | Invalid inputs, syntax errors, type violations |
+| **Performance** | `performance/performance.test.ts` | 5 | Query benchmarks, comparative timing |
+| **Schema Validation** | `schema/countries-schema.test.ts` | 25 | Types, fields, relationships, queries |
+| **Schema Validation** | `schema/spacex-schema.test.ts` | 27 | Types, fields, queries, mutations, relationships |
+| **Total** | | **75** | |
 
 ### Test Categories
 
@@ -252,21 +256,19 @@ This is **Project 2** of a 5-project SDET portfolio demonstrating modern test au
 
 ## 🔄 Project Status
 
-**Current Phase:** Schema Validation (v0.5.0)
-- ✅ Project structure created with API-specific test directories
+**Current Phase:** Test Structure Restructuring (v0.6.0)
+- ✅ Project structure created with category-based test organization
 - ✅ Dependencies installed
 - ✅ Jest + TypeScript + ESM configured
 - ✅ Design decisions documented
-- ✅ Countries API tests implemented (10 tests)
-- ✅ SpaceX API query tests implemented (3 tests)
-- ✅ SpaceX API mutation tests implemented (3 tests)
+- ✅ Query operations tests implemented (8 tests)
+- ✅ Mutation operations tests implemented (3 tests)
+- ✅ Error handling suite with cross-API coverage (7 tests)
+- ✅ Performance benchmarking suite with comparative tests (5 tests)
 - ✅ JSDoc documentation added to all test files
 - ✅ GraphQLTestClient wrapper implemented with multiple testing methods
-- ✅ Performance measurement tests added
-- ✅ Response metadata validation tests added
 - ✅ Schema introspection utilities created
-- ✅ Countries API schema tests implemented (25 tests)
-- ✅ SpaceX API schema tests implemented (27 tests)
+- ✅ Schema validation tests implemented (52 tests)
 
 **Next Steps:**
 - Set up CI/CD pipeline
@@ -290,7 +292,7 @@ Purpose-built for testing scenarios. 28x smaller package size (5KB vs 140KB), cl
 
 See [CHANGELOG.md](CHANGELOG.md) for detailed version history.
 
-**Current Version:** v0.5.0 - Schema Validation
+**Current Version:** v0.6.0 - Test Structure Restructuring
 
 ---
 
@@ -335,4 +337,4 @@ This project is part of a professional portfolio and is available for review and
 
 ---
 
-*Last Updated: January 26, 2026*
+*Last Updated: February 1, 2026*

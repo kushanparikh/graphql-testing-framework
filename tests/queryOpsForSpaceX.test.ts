@@ -1,4 +1,4 @@
-import { GraphQLTestClient } from '../../utils/graphql-client.ts';
+import { GraphQLTestClient } from '../utils/graphql-client.ts';
 import { describe, expect, test } from '@jest/globals';
 
 /**
@@ -22,7 +22,7 @@ import { describe, expect, test } from '@jest/globals';
  * @see https://studio.apollographql.com/public/SpaceX-pxxbxen/home for schema explorer
  */
 
-describe("Query Operations for SpaceX - Success", () => {
+describe("Query Operations for SpaceX", () => {
     const client = new GraphQLTestClient('https://spacex-production.up.railway.app/');
 
     test("should fetch launches with data only", async () => {
@@ -56,23 +56,6 @@ describe("Query Operations for SpaceX - Success", () => {
         // Wrapper already validated status=200 and content-type
         expect(response.headers).toBeDefined();
         expect(response.data.launches).toHaveLength(1);
-    });
-
-    test("should measure query performance", async () => {
-        const query = `
-            query{
-                launches (limit: 5) {
-                    mission_name
-                    launch_date_utc
-                }
-            }
-        `;
-
-        // Using measureQuery() - returns data and execution time
-        const { data, time } = await client.measureQuery(query);
-
-        expect(data.launches).toHaveLength(5);
-        expect(time).toBeLessThan(3000); // Response under 3 seconds
     });
 
     // Note: batchRequests() is not supported by this API

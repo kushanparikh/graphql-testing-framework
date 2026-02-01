@@ -17,6 +17,57 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.6.0] - 2026-02-01
+
+### Changed
+- **Test Organization Restructure** - Reorganized tests by category instead of API
+  - Moved test files from per-API folders to category-based structure
+  - Removed empty `countries/` and `spaceX/` directories
+  - Tests now organized at root level with cross-cutting concern folders
+
+### Added
+- **Error Handling Test Suite** (`tests/errors/error-handling.test.ts`) - 7 tests
+  - Extracted 3 tests from Countries query tests
+  - Added 4 new cross-API error validation tests
+  - Invalid arguments returning null
+  - Syntax errors in query strings
+  - Missing required variables
+  - Non-existent field validation (both APIs)
+  - Invalid variable type validation (both APIs)
+
+- **Performance Test Suite** (`tests/performance/performance.test.ts`) - 5 tests
+  - Extracted 2 tests from existing query tests
+  - Added 3 new benchmark tests
+  - Simple query benchmarks (< 2s)
+  - Large dataset queries (< 3s)
+  - Paginated query performance (5 items: < 3s, 100 items: < 5s)
+  - Comparative benchmarking (simple vs nested queries)
+
+### Removed
+- Error tests from `queryOpsForCountries.test.ts` (moved to error-handling suite)
+- Performance tests from both query test files (moved to performance suite)
+- Per-API folder structure (`countries/`, `spaceX/`)
+
+### Technical Details
+- Test count increased from 68 to 75 (+7 net)
+- Query operations files reduced from 10→6 and 3→2 tests respectively
+- All import paths updated after file restructuring
+- New structure:
+  ```
+  tests/
+  ├── queryOpsForCountries.test.ts (6 tests)
+  ├── queryOpsForSpaceX.test.ts (2 tests)
+  ├── mutationOpsForSpaceX.test.ts (3 tests)
+  ├── errors/error-handling.test.ts (7 tests)
+  ├── performance/performance.test.ts (5 tests)
+  └── schema/ (52 tests)
+  ```
+
+### Why This Change
+The original per-API structure (`countries/`, `spaceX/`) lost meaning after schema became its own cross-cutting folder. Tests mixed concerns (happy-path + errors + performance in single files). The new category-based structure provides clearer organization and better showcases testing capabilities in a portfolio context.
+
+---
+
 ## [0.5.0] - 2026-01-26
 
 ### Added
@@ -157,6 +208,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 0.6.0 | 2026-02-01 | Test structure restructuring (category-based organization) |
 | 0.5.0 | 2026-01-26 | Schema validation with introspection utilities |
 | 0.4.0 | 2026-01-26 | GraphQLTestClient wrapper with specialized methods |
 | 0.3.0 | 2026-01-20 | SpaceX API tests (queries and mutations) |
@@ -167,7 +219,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Upcoming Milestones
 
-### v0.6.0 - CI/CD Pipeline
+### v0.7.0 - CI/CD Pipeline
 - GitHub Actions workflow for automated testing
 - Test coverage reporting
 - PR checks and status badges
@@ -196,4 +248,4 @@ This changelog uses the following categories:
 
 *Changelog Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)*
 *Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html)*
-*Last Updated: January 26, 2026*
+*Last Updated: February 1, 2026*
