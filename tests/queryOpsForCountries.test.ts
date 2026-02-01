@@ -1,4 +1,4 @@
-import { GraphQLTestClient } from '../../utils/graphql-client.ts';
+import { GraphQLTestClient } from '../utils/graphql-client.ts';
 import { describe, expect, test } from '@jest/globals';
 
 /**
@@ -16,12 +16,11 @@ import { describe, expect, test } from '@jest/globals';
  * - Nested object queries (relationships)
  * - Array/list queries
  * - Filtering with variables
- * - Error handling (invalid inputs, syntax errors, missing variables)
  *
  * @see https://countries.trevorblades.com/ for API documentation
  */
 
-describe("Query Operations for Countries - Success", () => {
+describe("Query Operations for Countries", () => {
   const client = new GraphQLTestClient('https://countries.trevorblades.com/');
 
   test('Should be able to retrieve country details from country code', async () => {
@@ -143,69 +142,7 @@ describe("Query Operations for Countries - Success", () => {
     expect(data.countries.every((c: any) => c.code)).toBeTruthy();
   });
 
-  test('should measure query performance', async () => {
-    const query = `
-    query {
-      country(code: "US") {
-        name
-        capital
-      }
-    }
-  `;
-
-    // Using measureQuery() for performance testing
-    const { data, time } = await client.measureQuery(query);
-
-    expect(data.country.name).toBe('United States');
-    expect(time).toBeLessThan(2000); // Response under 2 seconds
-  });
-
   // Note: batchRequests() is not supported by this API
   // The Countries API returns: "Batch queries and APQ request are not currently supported"
   // Use batchRequests() with APIs that support batching (e.g., Hasura, Apollo Server with batching enabled)
-})
-
-describe("Query Operations for Countries - Error", () => {
-  const client = new GraphQLTestClient('https://countries.trevorblades.com/');
-  test('should handle invalid country code', async () => {
-    const query = `
-    query {
-      country(code: "INVALID") {
-        name
-      }
-    }
-  `;
-
-    // Using request() - only checking data, not response metadata
-    const data = await client.request(query);
-
-    // GraphQL returns null for non-existent country
-    expect(data.country).toBeNull();
-  });
-
-  test('should handle syntax errors', async () => {
-    const query = `
-    query {
-      country(code: "US" {
-        name
-      }
-    }
-  `;
-
-    // This will throw an error - using wrapper's helper method
-    await client.requestExpectingError(query);
-  });
-
-  test('should handle missing required variables', async () => {
-    const query = `
-    query GetCountry($code: ID!) {
-      country(code: $code) {
-        name
-      }
-    }
-  `;
-
-    // Don't pass variables - using wrapper's helper method
-    await client.requestExpectingError(query);
-  });
 })

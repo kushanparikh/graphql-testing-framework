@@ -1,4 +1,4 @@
-import { GraphQLTestClient } from '../../utils/graphql-client.ts';
+import { GraphQLTestClient } from '../utils/graphql-client.ts';
 import { describe, expect, test } from '@jest/globals';
 
 /**
