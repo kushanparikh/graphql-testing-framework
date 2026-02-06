@@ -33,19 +33,18 @@ Build a comprehensive GraphQL API testing framework demonstrating:
 #### Day 1-2: Project Setup (3 hours)
 
 **Setup Tasks:**
-- [ ] Create GitHub repository: `graphql-api-testing-suite`
-- [ ] Initialize Node.js project with TypeScript
-- [ ] Install dependencies:
+- [x] Create GitHub repository: `graphql-api-testing-suite`
+- [x] Initialize Node.js project with TypeScript
+- [x] Install dependencies:
   ```bash
   npm init -y
   npm install --save-dev typescript @types/node
-  npm install --save-dev vitest @vitest/ui
+  npm install --save-dev jest @types/jest ts-jest
   npm install graphql-request graphql
-  npm install --save-dev @types/jest
   ```
-- [ ] Configure `tsconfig.json` with strict settings
-- [ ] Configure `vitest.config.ts` for testing
-- [ ] Create project structure:
+- [x] Configure `tsconfig.json` with strict settings
+- [x] Configure `jest.config.js` for testing (chose Jest over Vitest — see DESIGN_DECISIONS.md)
+- [x] Create project structure:
   ```
   graphql-api-testing-suite/
   ├── tests/
@@ -61,8 +60,8 @@ Build a comprehensive GraphQL API testing framework demonstrating:
   └── fixtures/
       └── test-data.ts
   ```
-- [ ] Create README.md with project description
-- [ ] Make repository public
+- [x] Create README.md with project description
+- [x] Make repository public
 
 **Deliverables:**
 - Working TypeScript + Vitest environment
@@ -81,7 +80,7 @@ Build a comprehensive GraphQL API testing framework demonstrating:
 - TypeScript types for GraphQL responses
 
 **Tasks:**
-- [ ] Create `utils/graphql-client.ts` wrapper:
+- [x] Create `utils/graphql-client.ts` wrapper:
   ```typescript
   import { GraphQLClient } from 'graphql-request';
   
@@ -98,14 +97,13 @@ Build a comprehensive GraphQL API testing framework demonstrating:
   }
   ```
 
-- [ ] Write 5-7 basic query tests:
-  1. Get all countries (basic query)
-  2. Get country by code (with variables)
-  3. Get countries by continent (filtering)
-  4. Get country with specific fields (field selection)
-  5. Get multiple countries by codes (array variables)
-  6. Test invalid country code (error handling)
-  7. Test empty response handling
+- [x] Write 6 basic query tests:
+  1. Get country details from country code
+  2. Get country with multiple fields
+  3. Use query variables
+  4. Get nested data (country → continent)
+  5. Handle arrays (all countries)
+  6. Filter with variables (by continent)
 
 **Example Test Structure:**
 ```typescript
@@ -175,12 +173,12 @@ describe('Countries API - Basic Queries', () => {
 - Pagination patterns
 
 **Tasks:**
-- [ ] Write 4-5 complex query tests:
-  1. Get all launches with nested rocket data
-  2. Get launches with date filtering
-  3. Get mission details with deep nesting (launch → rocket → rocket_type)
-  4. Test pagination (limit, offset)
-  5. Test null/optional fields handling
+- [x] Write 5 tests (2 query + 3 mutation):
+  1. Fetch launches with data only (paginated)
+  2. Access response metadata (rawRequest)
+  3. Insert users mutation (Hasura-style)
+  4. Update users mutation (Hasura-style)
+  5. Delete users mutation (Hasura-style)
 
 **Example Complex Query:**
 ```typescript
@@ -218,12 +216,12 @@ it('should fetch launches with nested rocket data', async () => {
 
 ### Week 1 Deliverables Checklist
 
-- [ ] Repository created and configured
-- [ ] 10-12 query tests passing (Countries + SpaceX)
-- [ ] GraphQL client utility with error handling
-- [ ] TypeScript types for API responses
-- [ ] README with setup instructions
-- [ ] CHANGELOG.md started (v0.1.0)
+- [x] Repository created and configured
+- [x] 11 tests passing (6 Countries + 5 SpaceX)
+- [x] GraphQL client utility with error handling
+- [x] TypeScript types for API responses
+- [x] README with setup instructions
+- [x] CHANGELOG.md started (v0.1.0)
 
 ---
 
@@ -247,13 +245,16 @@ it('should fetch launches with nested rocket data', async () => {
 - Character/Episode/Location queries
 
 **Tasks:**
-- [ ] Write 5-6 tests using fragments:
-  1. Get characters with fragment reuse
-  2. Get episodes with character relationships
-  3. Test filter by name (partial match)
-  4. Test filter by status (alive/dead/unknown)
-  5. Multiple entities in one query (character + episode)
-  6. Test pagination with info metadata
+- [x] Write 9 tests (exceeded 5-6 target by 50%):
+  1. Single character fetch by ID with query variables
+  2. Pagination metadata and default page size validation
+  3. Partial name filtering (case-insensitive)
+  4. Multi-parameter AND filter composition using GraphQL aliases
+  5. 3-level nested data traversal (Character → Origin Location → Residents)
+  6. Episode-character one-to-many relationship validation
+  7. Multi-resource query (character + location + episode in one request)
+  8. Fragment-based field reuse (DRY) with alias composition
+  9. Alias-based queries for same resource type with different parameters
 
 **Example with Fragments:**
 ```typescript
@@ -292,9 +293,9 @@ it('should use fragments for character queries', async () => {
 ```
 
 **Deliverables:**
-- 5-6 tests demonstrating fragments
-- Multi-query request examples
-- Filter and pagination tests
+- ✅ 9 tests demonstrating fragments, aliases, pagination, nested traversal, multi-resource queries, filtering
+- ✅ Multi-query request examples (multi-resource + aliases)
+- ✅ Filter and pagination tests (partial name, multi-parameter AND, pagination metadata)
 
 ---
 
@@ -470,12 +471,12 @@ it('should handle missing required variables', async () => {
 
 ### Week 2 Deliverables Checklist
 
-- [ ] 15-20 additional tests (mutations, schema, errors)
-- [ ] Mock GraphQL server for mutation testing
-- [ ] Schema introspection utilities
-- [ ] Error handling patterns documented
-- [ ] Data-driven testing examples
-- [ ] Update CHANGELOG.md (v0.2.0)
+- [x] 15-20 additional tests (mutations, schema, errors, Rick & Morty) — actual: 71 additional
+- [ ] Mock GraphQL server for mutation testing (used SpaceX Hasura instead)
+- [x] Schema introspection utilities
+- [x] Error handling patterns documented
+- [x] Data-driven testing examples
+- [x] Update CHANGELOG.md
 
 ---
 
@@ -821,14 +822,14 @@ graphql-api-testing-suite/
 ## Success Metrics
 
 ### Test Coverage Goals
-- **Minimum:** 40+ tests across all categories
+- **Minimum:** 40+ tests across all categories → ✅ 84 tests achieved
 - **Target Breakdown:**
-  - Queries: 15-20 tests
-  - Mutations: 4-5 tests (mock server)
-  - Schema: 5-6 tests
-  - Errors: 5-6 tests
-  - Auth: 5-6 tests
-  - Performance: 4-5 tests
+  - Queries: 15-20 tests → ✅ 17 (6 Countries + 2 SpaceX + 9 Rick & Morty)
+  - Mutations: 4-5 tests → 3 implemented (SpaceX Hasura-style)
+  - Schema: 5-6 tests → ✅ 52 (24 Countries + 28 SpaceX)
+  - Errors: 5-6 tests → ✅ 7 implemented
+  - Auth: 5-6 tests (not yet started)
+  - Performance: 4-5 tests → ✅ 5 implemented
 
 ### Code Quality
 - TypeScript strict mode enabled
@@ -961,4 +962,4 @@ npm run test:ci
 
 ---
 
-*Last Updated: January 14, 2026*
+*Last Updated: February 5, 2026*
