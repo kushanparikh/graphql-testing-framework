@@ -2,7 +2,7 @@
 
 **Project:** GraphQL API Testing Suite (Portfolio Project 2)  
 **Purpose:** Document technology choices and trade-offs  
-**Last Updated:** January 26, 2026
+**Last Updated:** February 5, 2026
 
 ---
 
@@ -416,29 +416,39 @@ ESM is the future of JavaScript modules. While the configuration is more complex
 
 ## 4. Test Organization Strategy
 
-### Decision: **API-specific directories with operation-type files**
+### Decision: **Flat structure with category subdirectories for cross-cutting concerns**
+
+> **Note:** The original design (v0.1.0–v0.5.0) used per-API subdirectories (`countries/`, `spaceX/`).
+> This was retired in v0.6.0 in favor of a flat layout, because schema validation and error handling
+> are cross-API concerns that didn't fit neatly into API-specific folders.
 
 ### The Structure
 
 ```
 tests/
-├── countries/
-│   └── queryOpsForCountries.test.ts
-└── spaceX/
-    ├── queryOpsForSpaceX.test.ts
-    └── mutationOpsForSpaceX.test.ts
+├── queryOpsForCountries.test.ts        # Countries API query tests (6)
+├── queryOpsForSpaceX.test.ts           # SpaceX API query tests (2)
+├── queryOpsForRickAndMorty.test.ts     # Rick & Morty API query tests (9)
+├── mutationOpsForSpaceX.test.ts        # SpaceX API mutation tests (3)
+├── errors/
+│   └── error-handling.test.ts          # Cross-API error handling (7)
+├── performance/
+│   └── performance.test.ts             # Performance benchmarks (5)
+└── schema/
+    ├── countries-schema.test.ts        # Countries schema validation (24)
+    └── spacex-schema.test.ts           # SpaceX schema validation (28)
 ```
 
 ### Why This Structure?
 
-#### 1. API-Specific Directories
+#### 1. Flat Layout for API-Specific Tests
 
-Each GraphQL API gets its own directory because:
+Operation-type test files live at the `tests/` root because:
 
-- **Different schemas**: Each API has unique types, queries, and mutations
-- **Different behaviors**: Countries API is read-only; SpaceX has mutations (even if disabled)
-- **Independent test runs**: Can run `npm test -- countries` to test only one API
-- **Clear ownership**: Easy to find all tests related to a specific API
+- **Simple discovery**: All query/mutation test files are immediately visible without navigating subdirectories
+- **Easy CLI targeting**: Can run `npm test -- RickAndMorty` to test only one API
+- **File naming is sufficient**: The `queryOpsFor<API>` convention already encodes both the operation type and API
+- **Cross-cutting subdirectories**: Errors, performance, and schema tests span multiple APIs and belong in their own folders
 
 #### 2. Operation-Type Files
 
@@ -648,13 +658,13 @@ The wrapper accepts both to ensure compatibility across APIs.
 
 | Method | Usage Count | Percentage |
 |--------|-------------|------------|
-| `request()` | 10 tests | 62.5% |
-| `rawRequest()` | 2 tests | 12.5% |
-| `requestExpectingError()` | 2 tests | 12.5% |
-| `measureQuery()` | 2 tests | 12.5% |
-| `batchRequests()` | 0 tests* | 0% |
+| `request()` | 20 calls | 60.6% |
+| `rawRequest()` | 2 calls | 6.1% |
+| `requestExpectingError()` | 5 calls | 15.2% |
+| `measureQuery()` | 6 calls | 18.2% |
+| `batchRequests()` | 0 calls* | 0% |
 
-*Not supported by current test APIs
+*Not supported by current test APIs. The remaining 52 tests (schema validation) use introspection utility functions rather than direct wrapper method calls.
 
 ---
 
@@ -761,8 +771,8 @@ beforeAll(async () => {
 
 | API | Tests | Coverage |
 |-----|-------|----------|
-| Countries | 25 | Types, fields, relationships, queries |
-| SpaceX | 27 | Types, fields, queries, mutations, nested relationships |
+| Countries | 24 | Types, fields, relationships, queries |
+| SpaceX | 28 | Types, fields, queries, mutations, nested relationships |
 
 **Test Categories:**
 - **Type Existence**: Verify expected types exist in schema
@@ -787,4 +797,4 @@ beforeAll(async () => {
 
 ---
 
-*Last Updated: January 26, 2026*
+*Last Updated: February 5, 2026*

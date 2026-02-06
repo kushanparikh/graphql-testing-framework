@@ -83,6 +83,7 @@ graphql-api-testing-suite/
 ├── tests/                          # Test specifications
 │   ├── queryOpsForCountries.test.ts    # Countries API query tests
 │   ├── queryOpsForSpaceX.test.ts       # SpaceX API query tests
+│   ├── queryOpsForRickAndMorty.test.ts # Rick & Morty API query tests
 │   ├── mutationOpsForSpaceX.test.ts    # SpaceX API mutation tests
 │   ├── errors/                         # Error handling tests
 │   │   └── error-handling.test.ts
@@ -113,18 +114,19 @@ This framework demonstrates comprehensive GraphQL testing capabilities:
 |----------|-----------|-------|-------------|
 | **Query Operations** | `queryOpsForCountries.test.ts` | 6 | Basic queries, variables, nested data, filtering |
 | **Query Operations** | `queryOpsForSpaceX.test.ts` | 2 | Paginated queries, response metadata |
+| **Query Operations** | `queryOpsForRickAndMorty.test.ts` | 9 | Fragments, aliases, pagination, nested traversal, multi-resource, filtering |
 | **Mutation Operations** | `mutationOpsForSpaceX.test.ts` | 3 | Hasura-style mutations (insert, update, delete) |
 | **Error Handling** | `errors/error-handling.test.ts` | 7 | Invalid inputs, syntax errors, type violations |
 | **Performance** | `performance/performance.test.ts` | 5 | Query benchmarks, comparative timing |
-| **Schema Validation** | `schema/countries-schema.test.ts` | 25 | Types, fields, relationships, queries |
-| **Schema Validation** | `schema/spacex-schema.test.ts` | 27 | Types, fields, queries, mutations, relationships |
-| **Total** | | **75** | |
+| **Schema Validation** | `schema/countries-schema.test.ts` | 24 | Types, fields, relationships, queries |
+| **Schema Validation** | `schema/spacex-schema.test.ts` | 28 | Types, fields, queries, mutations, relationships |
+| **Total** | | **84** | |
 
 ### Test Categories
 
 | Category | Status | Details |
 |----------|--------|---------|
-| **Query Operations** | ✅ Implemented | Basic queries, variables, nested objects, arrays, filtering |
+| **Query Operations** | ✅ Implemented | Basic queries, variables, nested objects, arrays, filtering, fragments, aliases, pagination, nested traversal, multi-resource queries |
 | **Mutation Operations** | ✅ Implemented | Hasura-style CRUD mutations (API returns null - read-only) |
 | **Error Handling** | ✅ Implemented | Invalid inputs, syntax errors, missing variables |
 | **Performance Testing** | ✅ Implemented | Query timing with `measureQuery()` |
@@ -199,12 +201,12 @@ This framework tests against multiple public GraphQL APIs:
 |-----|----------|-----------------|
 | **Countries API** | https://countries.trevorblades.com/ | Queries, variables, nested data, filtering, error handling |
 | **SpaceX API** | https://spacex-production.up.railway.app/ | Paginated queries, Hasura-style mutations |
+| **Rick and Morty API** | https://rickandmortyapi.com/graphql | Fragments, aliases, pagination, nested traversal, multi-resource queries, filtering |
 
 ### Planned
 
 | API | Endpoint | Planned Coverage |
 |-----|----------|------------------|
-| **Rick and Morty API** | https://rickandmortyapi.com/graphql | Fragments, advanced filtering |
 | **GitHub GraphQL API** | https://api.github.com/graphql | Authentication, rate limiting |
 
 ---
@@ -256,12 +258,13 @@ This is **Project 2** of a 5-project SDET portfolio demonstrating modern test au
 
 ## 🔄 Project Status
 
-**Current Phase:** Test Structure Restructuring (v0.6.0)
+**Current Phase:** Rick & Morty Query Operations (v0.7.0)
 - ✅ Project structure created with category-based test organization
 - ✅ Dependencies installed
 - ✅ Jest + TypeScript + ESM configured
 - ✅ Design decisions documented
-- ✅ Query operations tests implemented (8 tests)
+- ✅ Query operations tests implemented (17 tests)
+- ✅ Rick & Morty API query operations implemented (9 tests: fragments, aliases, pagination, nested traversal, multi-resource, filtering)
 - ✅ Mutation operations tests implemented (3 tests)
 - ✅ Error handling suite with cross-API coverage (7 tests)
 - ✅ Performance benchmarking suite with comparative tests (5 tests)
@@ -269,9 +272,9 @@ This is **Project 2** of a 5-project SDET portfolio demonstrating modern test au
 - ✅ GraphQLTestClient wrapper implemented with multiple testing methods
 - ✅ Schema introspection utilities created
 - ✅ Schema validation tests implemented (52 tests)
+- ✅ CI/CD pipeline implemented (GitHub Actions)
 
 **Next Steps:**
-- Set up CI/CD pipeline
 - Add authentication tests for GitHub API
 
 ---
@@ -292,7 +295,7 @@ Purpose-built for testing scenarios. 28x smaller package size (5KB vs 140KB), cl
 
 See [CHANGELOG.md](CHANGELOG.md) for detailed version history.
 
-**Current Version:** v0.6.0 - Test Structure Restructuring
+**Current Version:** v0.7.0 - Rick & Morty Query Operations
 
 ---
 
@@ -337,4 +340,4 @@ This project is part of a professional portfolio and is available for review and
 
 ---
 
-*Last Updated: February 1, 2026*
+*Last Updated: February 5, 2026*

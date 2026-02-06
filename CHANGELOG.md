@@ -10,10 +10,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned
-- CI/CD pipeline with GitHub Actions
 - GitHub API authentication tests
-- Rick and Morty API fragment tests
 - Mock GraphQL server for mutation testing
+
+---
+
+## [0.7.0] - 2026-02-05
+
+### Added
+- **Rick & Morty API Query Tests** (`tests/queryOpsForRickAndMorty.test.ts`) - 9 tests
+  - Single character fetch by ID with query variables
+  - Pagination metadata validation (count, pages, next/prev)
+  - Partial name filtering (case-insensitive)
+  - Multi-parameter AND filter composition using GraphQL aliases
+  - 3-level nested data traversal (Character → Origin Location → Residents)
+  - Episode-character one-to-many relationship validation
+  - Multi-resource query (character + location + episode in one request)
+  - Fragment-based field reuse (DRY) with alias composition
+  - Alias-based queries for same resource type with different parameters
+
+### Technical Details
+- Test count increased from 75 to 84 (+9)
+- Query operation tests: 8 → 17
+- All 9 tests use `request()` method (data-only)
+- JSDoc documentation on every test with `Tests:` summary lines
+- `beforeAll` used for stateless client sharing (consistent with Countries/SpaceX suites)
+- New structure:
+  ```
+  tests/
+  ├── queryOpsForCountries.test.ts (6 tests)
+  ├── queryOpsForSpaceX.test.ts (2 tests)
+  ├── queryOpsForRickAndMorty.test.ts (9 tests)  ← NEW
+  ├── mutationOpsForSpaceX.test.ts (3 tests)
+  ├── errors/error-handling.test.ts (7 tests)
+  ├── performance/performance.test.ts (5 tests)
+  └── schema/ (52 tests)
+  ```
 
 ---
 
@@ -81,14 +113,14 @@ The original per-API structure (`countries/`, `spaceX/`) lost meaning after sche
   - `typeExists()` - Check if type exists
   - `getTypeKind()` - Get type kind (OBJECT, SCALAR, etc.)
 
-- **Countries API Schema Tests** (`tests/schema/countries-schema.test.ts`) - 25 tests
+- **Countries API Schema Tests** (`tests/schema/countries-schema.test.ts`) - 24 tests
   - Type existence validation (Country, Continent, Language, State)
   - Field presence and type validation
   - Required/optional field validation
   - Query operation validation
   - Nested relationship testing
 
-- **SpaceX API Schema Tests** (`tests/schema/spacex-schema.test.ts`) - 27 tests
+- **SpaceX API Schema Tests** (`tests/schema/spacex-schema.test.ts`) - 28 tests
   - Type existence validation (Launch, Rocket, Capsule, Launchpad)
   - Field presence and type validation
   - Query and Mutation operation validation
@@ -208,6 +240,7 @@ The original per-API structure (`countries/`, `spaceX/`) lost meaning after sche
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 0.7.0 | 2026-02-05 | Rick & Morty API query operations (9 tests) |
 | 0.6.0 | 2026-02-01 | Test structure restructuring (category-based organization) |
 | 0.5.0 | 2026-01-26 | Schema validation with introspection utilities |
 | 0.4.0 | 2026-01-26 | GraphQLTestClient wrapper with specialized methods |
@@ -219,15 +252,10 @@ The original per-API structure (`countries/`, `spaceX/`) lost meaning after sche
 
 ## Upcoming Milestones
 
-### v0.7.0 - CI/CD Pipeline
-- GitHub Actions workflow for automated testing
-- Test coverage reporting
-- PR checks and status badges
-
 ### v1.0.0 - Production Ready
 - GitHub API authentication tests
-- Rick and Morty API fragment tests
 - Comprehensive documentation (ARCHITECTURE.md, LEARNING_NOTES.md)
+- CI badge in README
 - Production-ready portfolio project
 
 ---
@@ -248,4 +276,4 @@ This changelog uses the following categories:
 
 *Changelog Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)*
 *Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html)*
-*Last Updated: February 1, 2026*
+*Last Updated: February 5, 2026*
