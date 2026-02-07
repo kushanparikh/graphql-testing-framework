@@ -169,18 +169,9 @@ describeWithAuth('GitHub API - Authentication', () => {
    * Tests: Repository query, owner field, language detection, nested objects
    */
     test('should get repository details', async () => {
-        // First, get the viewer's login to use as owner
-        const viewerQuery = `
-            query {
-                viewer {
-                    login
-                }
-            }`;
-        const viewerData = await client.request(viewerQuery);
-        const owner = viewerData.viewer.login;
-
-        // Now query for a specific repository
-        // Using "graphql-api-testing-suite" as example - adjust if needed
+        // Query this project's own repository by explicit owner/name
+        // Note: owner is hardcoded because in CI the viewer is "github-actions[bot]",
+        // which does not own this repo. The repo owner is always "kushanparikh".
         const query = `
             query($owner: String!, $name: String!) {
                 repository(owner: $owner, name: $name) {
@@ -206,7 +197,7 @@ describeWithAuth('GitHub API - Authentication', () => {
         `;
 
         const variables = {
-            owner: owner,
+            owner: 'kushanparikh',
             name: 'graphql-testing-framework'
         };
 
