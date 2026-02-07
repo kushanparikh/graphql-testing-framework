@@ -10,8 +10,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned
-- GitHub API authentication tests
 - Mock GraphQL server for mutation testing
+- Comprehensive documentation (ARCHITECTURE.md, LEARNING_NOTES.md)
+- v1.0.0 production release
+
+---
+
+## [0.8.0] - 2026-02-07
+
+### Added
+- **GitHub API Authentication Tests** (`tests/queryOpsForGitHubAuth.test.ts`) - 6 tests
+  - Authenticated user profile retrieval (viewer query with login, avatar, createdAt)
+  - Repository listing with pagination (first 5, orderBy CREATED_AT)
+  - Specific repository details with nested data (primaryLanguage, languages, variables)
+  - Rate limit validation (rateLimit query + response headers)
+  - Invalid token error handling (401 Unauthorized via `requestExpectingError()`)
+  - Token scope validation (private repository access with `repo` scope)
+
+- **dotenv dependency** for environment variable loading from `.env` file
+
+### Technical Details
+- Test count increased from 84 to 90 (+6)
+- Authentication query tests: 0 → 6
+- Uses conditional `describe.skip` pattern for graceful skipping when `GITHUB_TOKEN` is unavailable
+- `dotenv` loads token from `.env` file (gitignored); CI uses auto-provided `GITHUB_TOKEN`
+- All tests are read-only (no mutations) to avoid affecting real GitHub data
+- JSDoc documentation on every test with comprehensive file-level header
+- New structure:
+  ```
+  tests/
+  ├── queryOpsForCountries.test.ts (6 tests)
+  ├── queryOpsForSpaceX.test.ts (2 tests)
+  ├── queryOpsForRickAndMorty.test.ts (9 tests)
+  ├── queryOpsForGitHubAuth.test.ts (6 tests)  ← NEW
+  ├── mutationOpsForSpaceX.test.ts (3 tests)
+  ├── errors/error-handling.test.ts (7 tests)
+  ├── performance/performance.test.ts (5 tests)
+  └── schema/ (52 tests)
+  ```
 
 ---
 
@@ -240,6 +276,7 @@ The original per-API structure (`countries/`, `spaceX/`) lost meaning after sche
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 0.8.0 | 2026-02-07 | GitHub API authentication tests (6 tests) |
 | 0.7.0 | 2026-02-05 | Rick & Morty API query operations (9 tests) |
 | 0.6.0 | 2026-02-01 | Test structure restructuring (category-based organization) |
 | 0.5.0 | 2026-01-26 | Schema validation with introspection utilities |
@@ -253,9 +290,7 @@ The original per-API structure (`countries/`, `spaceX/`) lost meaning after sche
 ## Upcoming Milestones
 
 ### v1.0.0 - Production Ready
-- GitHub API authentication tests
 - Comprehensive documentation (ARCHITECTURE.md, LEARNING_NOTES.md)
-- CI badge in README
 - Production-ready portfolio project
 
 ---
@@ -276,4 +311,4 @@ This changelog uses the following categories:
 
 *Changelog Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)*
 *Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html)*
-*Last Updated: February 5, 2026*
+*Last Updated: February 7, 2026*

@@ -2,8 +2,8 @@
 
 **Project:** GraphQL API Testing Suite (Portfolio Project 2)
 **Timeline:** 3 weeks @ 10 hours/week = 30 hours total
-**Current Status:** Week 2 - Advanced Features (Rick & Morty complete)
-**Last Updated:** February 5, 2026
+**Current Status:** Week 3 - Auth + Performance + CI/CD (GitHub Auth complete)
+**Last Updated:** February 7, 2026
 
 ---
 
@@ -12,10 +12,10 @@
 | Week | Focus | Hours | Status |
 |------|-------|-------|--------|
 | **Week 1** | Setup + Basic Queries (Countries, SpaceX) | 10 | ✅ COMPLETE |
-| **Week 2** | Advanced Features (Rick & Morty, Mutations, Schema) | 10 | 🟡 IN PROGRESS |
-| **Week 3** | Auth + Performance + CI/CD (GitHub, Polish) | 10 | ⬜ NOT STARTED |
+| **Week 2** | Advanced Features (Rick & Morty, Mutations, Schema) | 10 | ✅ COMPLETE |
+| **Week 3** | Auth + Performance + CI/CD (GitHub, Polish) | 10 | 🟡 IN PROGRESS |
 
-**Current Test Count:** 84 tests (target was 40+) ✅
+**Current Test Count:** 90 tests (target was 40+) ✅
 
 ---
 
@@ -28,9 +28,9 @@
 | **Countries** | ✅ | ❌ | ✅ | ❌ | ✅ | 30 |
 | **SpaceX** | ✅ | ✅ | ✅ | ❌ | ✅ | 33 |
 | **Rick & Morty** | ✅ | ❌ | ❌ | ❌ | ❌ | 9 |
-| **GitHub** | ✅ | ❌* | ✅ | ✅ | ✅ | 5-6 |
+| **GitHub** | ✅ | ❌* | ❌ | ✅ | ✅ | 6 |
 | **Mock Server** | ✅ | ✅ | ✅ | ✅ | ❌ | 4-5 |
-| **Total** | | | | | | **84** |
+| **Total** | | | | | | **90** |
 
 *GitHub mutations possible but not recommended (could affect real account)
 
@@ -248,28 +248,33 @@
 ### Phase 9: GitHub API - Authentication (4 hours)
 
 **API:** https://api.github.com/graphql
-**Status:** ⬜ NOT STARTED
+**Status:** ✅ COMPLETE
 
 **Setup Tasks:**
-- [ ] Create GitHub Personal Access Token
-  - [ ] Go to GitHub Settings → Developer settings → Personal access tokens
-  - [ ] Generate token with `read:user` and `repo` scopes
-  - [ ] Store in `.env` file (add to `.gitignore`)
-- [ ] Create `config/auth.ts` for token management
-- [ ] Extend GraphQL client for authentication headers
+- [x] Create GitHub Personal Access Token
+  - [x] Go to GitHub Settings → Developer settings → Personal access tokens
+  - [x] Generate token with `read:user` and `repo` scopes
+  - [x] Store in `.env` file (add to `.gitignore`)
+- [x] Install `dotenv` for environment variable loading
+- [x] Extend GraphQL client for authentication headers (already supported via constructor)
 
-**Tests to Write (5-6 tests):**
-- [ ] Create `tests/github/` directory
-- [ ] Create `types/github.types.ts`
-- [ ] Write test file: `github-auth.test.ts`
-- [ ] Test 1: Fetch viewer (authenticated user) profile
-- [ ] Test 2: List user's repositories
-- [ ] Test 3: Get repository details
-- [ ] Test 4: Test with invalid token (401 error)
-- [ ] Test 5: Test rate limit headers
-- [ ] Test 6: Test token expiration handling
+**Tests Written (6 tests):**
+- [x] Create `tests/queryOpsForGitHubAuth.test.ts` (flat structure, consistent with other test files)
+- [x] Test 1: Fetch authenticated user profile (viewer query)
+- [x] Test 2: List user's repositories with pagination
+- [x] Test 3: Get specific repository details with nested data (languages, primaryLanguage)
+- [x] Test 4: Validate rate limit information (rateLimit query + headers)
+- [x] Test 5: Handle invalid token (401 error) using `requestExpectingError()`
+- [x] Test 6: Query data requiring repo scope (private repositories)
 
-**Deliverable:** 5-6 authenticated GitHub API tests
+**Implementation Details:**
+- Uses `dotenv` to load `GITHUB_TOKEN` from `.env` file
+- Conditional `describe.skip` pattern for graceful skipping when no token available
+- CI/CD uses auto-provided `GITHUB_TOKEN` from GitHub Actions
+- All tests are read-only (no mutations) to avoid affecting real GitHub data
+- JSDoc documentation on every test with comprehensive file-level header
+
+**Deliverable:** ✅ 6 authenticated GitHub API tests
 
 ---
 
@@ -305,7 +310,7 @@
 - [x] Configure GitHub secrets for GITHUB_TOKEN
 - [x] Add artifact uploads for coverage reports
 - [x] Test pipeline with a commit
-- [ ] Add CI badge to README.md
+- [x] Add CI badge to README.md
 
 **Deliverable:** ✅ Working GitHub Actions pipeline with coverage reporting
 
@@ -342,17 +347,17 @@
 
 ### Week 3 Deliverables Checklist
 
-- [ ] 5-6 GitHub API tests passing (with auth)
+- [x] 5-6 GitHub API tests passing (with auth) (actual: 6)
 - [x] 4-5 performance tests passing (actual: 5)
 - [x] GitHub Actions CI/CD pipeline working
 - [ ] ARCHITECTURE.md complete
 - [ ] LEARNING_NOTES.md complete
 - [ ] API_COVERAGE.md complete
-- [ ] README.md updated with badges
+- [x] README.md updated with badges
 - [ ] CHANGELOG.md finalized (v1.0.0)
 - [ ] Create v1.0.0 release tag
 
-**Final Test Count:** 40+ tests total → ✅ Already at 84 tests
+**Final Test Count:** 40+ tests total → ✅ Already at 90 tests
 
 ---
 
@@ -373,7 +378,7 @@
   - [ ] Mutations: 4-5 tests → 3 implemented (SpaceX Hasura-style)
   - [x] Schema: 5-6 tests ✅ (52 tests: 24 Countries + 28 SpaceX — far exceeding target)
   - [x] Errors: 5-6 tests ✅ (7 tests implemented)
-  - [ ] Auth: 5-6 tests (not yet started)
+  - [x] Auth: 5-6 tests ✅ (6 tests: viewer, repos, repo details, rate limits, invalid token, scopes)
   - [x] Performance: 4-5 tests ✅ (5 tests implemented)
 
 ### Documentation
@@ -390,7 +395,7 @@
 - [x] Professional README
 - [x] Clean commit history
 - [x] Proper versioning (tags)
-- [ ] CI/CD badge in README
+- [x] CI/CD badge in README
 - [x] No hardcoded secrets
 - [ ] Ready for job applications
 
@@ -425,19 +430,23 @@ npm run test:coverage
 | v0.5.0 | Jan 26, 2026 | Schema validation (52 tests) | ✅ COMPLETE |
 | v0.6.0 | Feb 1, 2026 | Test structure restructuring | ✅ COMPLETE |
 | v0.7.0 | Feb 5, 2026 | Rick & Morty query operations (9 tests) | ✅ COMPLETE |
-| v1.0.0 | Week 3 end | Production ready (Auth, CI/CD) | ⬜ Planned |
+| v0.8.0 | Feb 7, 2026 | GitHub API authentication tests (6 tests) | ✅ COMPLETE |
+| v1.0.0 | Week 3 end | Production ready (Documentation, Polish) | ⬜ Planned |
 
 ---
 
-## 📋 Current Sprint (Week 2 → Week 3)
+## 📋 Current Sprint (Week 3)
 
-**This Week's Focus:** Week 2 - Advanced Features (Rick & Morty complete, GitHub Auth next)
+**This Week's Focus:** Week 3 - Auth + Performance + CI/CD (GitHub Auth complete)
 
-**Next Task:** GitHub API authentication tests (Phase 9)
+**Next Task:** Documentation & Polish (Phase 12)
 
-**Estimated Time Remaining:** ~10 hours (Week 3 phases)
+**Completed This Sprint:**
+- ✅ GitHub API authentication tests (6 tests)
+- ✅ Performance testing (5 tests)
+- ✅ CI/CD pipeline (GitHub Actions)
 
 ---
 
-*Last Updated: February 5, 2026*
-*Current Phase: Week 2 - Rick & Morty Complete, Moving to Week 3*
+*Last Updated: February 7, 2026*
+*Current Phase: Week 3 - GitHub Auth Complete, Moving to Documentation & Polish*
