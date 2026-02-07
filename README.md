@@ -1,5 +1,7 @@
 # GraphQL API Testing Suite
 
+[![GraphQL API Tests](https://github.com/kushanparikh/graphql-testing-framework/actions/workflows/graphql.yml/badge.svg)](https://github.com/kushanparikh/graphql-testing-framework/actions/workflows/graphql.yml)
+
 **Portfolio Project 2:** Comprehensive GraphQL API testing framework demonstrating modern API testing expertise.
 
 ---
@@ -59,7 +61,8 @@ npm test
 ```json
 {
   "graphql": "^16.8.1",
-  "graphql-request": "^6.1.0"
+  "graphql-request": "^6.1.0",
+  "dotenv": "^17.2.4"
 }
 ```
 
@@ -85,6 +88,7 @@ graphql-api-testing-suite/
 │   ├── queryOpsForSpaceX.test.ts       # SpaceX API query tests
 │   ├── queryOpsForRickAndMorty.test.ts # Rick & Morty API query tests
 │   ├── mutationOpsForSpaceX.test.ts    # SpaceX API mutation tests
+│   ├── queryOpsForGitHubAuth.test.ts   # GitHub API authentication tests (6)
 │   ├── errors/                         # Error handling tests
 │   │   └── error-handling.test.ts
 │   ├── performance/                    # Performance benchmarks
@@ -116,11 +120,12 @@ This framework demonstrates comprehensive GraphQL testing capabilities:
 | **Query Operations** | `queryOpsForSpaceX.test.ts` | 2 | Paginated queries, response metadata |
 | **Query Operations** | `queryOpsForRickAndMorty.test.ts` | 9 | Fragments, aliases, pagination, nested traversal, multi-resource, filtering |
 | **Mutation Operations** | `mutationOpsForSpaceX.test.ts` | 3 | Hasura-style mutations (insert, update, delete) |
+| **Authentication** | `queryOpsForGitHubAuth.test.ts` | 6 | Authenticated queries, rate limits, invalid tokens, token scopes |
 | **Error Handling** | `errors/error-handling.test.ts` | 7 | Invalid inputs, syntax errors, type violations |
 | **Performance** | `performance/performance.test.ts` | 5 | Query benchmarks, comparative timing |
 | **Schema Validation** | `schema/countries-schema.test.ts` | 24 | Types, fields, relationships, queries |
 | **Schema Validation** | `schema/spacex-schema.test.ts` | 28 | Types, fields, queries, mutations, relationships |
-| **Total** | | **84** | |
+| **Total** | | **90** | |
 
 ### Test Categories
 
@@ -132,7 +137,7 @@ This framework demonstrates comprehensive GraphQL testing capabilities:
 | **Performance Testing** | ✅ Implemented | Query timing with `measureQuery()` |
 | **Response Validation** | ✅ Implemented | Status codes, content-type headers via `rawRequest()` |
 | **Schema Validation** | ✅ Implemented | Type existence, field validation, relationships via introspection |
-| **Authentication** | 🔄 Planned | GitHub API with JWT tokens |
+| **Authentication** | ✅ Implemented | GitHub API with token auth, rate limits, error handling, token scopes |
 
 ### GraphQLTestClient Wrapper Methods
 
@@ -202,12 +207,7 @@ This framework tests against multiple public GraphQL APIs:
 | **Countries API** | https://countries.trevorblades.com/ | Queries, variables, nested data, filtering, error handling |
 | **SpaceX API** | https://spacex-production.up.railway.app/ | Paginated queries, Hasura-style mutations |
 | **Rick and Morty API** | https://rickandmortyapi.com/graphql | Fragments, aliases, pagination, nested traversal, multi-resource queries, filtering |
-
-### Planned
-
-| API | Endpoint | Planned Coverage |
-|-----|----------|------------------|
-| **GitHub GraphQL API** | https://api.github.com/graphql | Authentication, rate limiting |
+| **GitHub GraphQL API** | https://api.github.com/graphql | Authentication, rate limiting, token validation, repo queries |
 
 ---
 
@@ -258,7 +258,7 @@ This is **Project 2** of a 5-project SDET portfolio demonstrating modern test au
 
 ## 🔄 Project Status
 
-**Current Phase:** Rick & Morty Query Operations (v0.7.0)
+**Current Phase:** GitHub API Authentication (v0.8.0)
 - ✅ Project structure created with category-based test organization
 - ✅ Dependencies installed
 - ✅ Jest + TypeScript + ESM configured
@@ -273,9 +273,11 @@ This is **Project 2** of a 5-project SDET portfolio demonstrating modern test au
 - ✅ Schema introspection utilities created
 - ✅ Schema validation tests implemented (52 tests)
 - ✅ CI/CD pipeline implemented (GitHub Actions)
+- ✅ GitHub API authentication tests implemented (6 tests: viewer profile, repo listing, repo details, rate limits, invalid token handling, token scope validation)
 
 **Next Steps:**
-- Add authentication tests for GitHub API
+- Documentation polish (ARCHITECTURE.md, LEARNING_NOTES.md)
+- Final v1.0.0 release
 
 ---
 
@@ -295,7 +297,7 @@ Purpose-built for testing scenarios. 28x smaller package size (5KB vs 140KB), cl
 
 See [CHANGELOG.md](CHANGELOG.md) for detailed version history.
 
-**Current Version:** v0.7.0 - Rick & Morty Query Operations
+**Current Version:** v0.8.0 - GitHub API Authentication
 
 ---
 
@@ -340,4 +342,4 @@ This project is part of a professional portfolio and is available for review and
 
 ---
 
-*Last Updated: February 5, 2026*
+*Last Updated: February 7, 2026*

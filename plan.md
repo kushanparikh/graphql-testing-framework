@@ -504,28 +504,22 @@ it('should handle missing required variables', async () => {
 - Private data access
 
 **Tasks:**
-- [ ] Set up environment variables for auth token:
+- [x] Set up environment variables for auth token:
+  - Used `dotenv` to load `GITHUB_TOKEN` from `.env` file
+  - CI uses auto-provided `GITHUB_TOKEN` from GitHub Actions
+
+- [x] GraphQL client already supports authentication via constructor:
   ```typescript
-  // config/auth.ts
-  export const GITHUB_TOKEN = process.env.GITHUB_TOKEN || '';
+  client = new GraphQLTestClient(GITHUB_API, GITHUB_TOKEN!);
   ```
 
-- [ ] Extend GraphQL client for authentication:
-  ```typescript
-  constructor(endpoint: string, token?: string) {
-    this.client = new GraphQLClient(endpoint, {
-      headers: token ? { authorization: `Bearer ${token}` } : {},
-    });
-  }
-  ```
-
-- [ ] Write 5-6 authenticated tests:
-  1. Get viewer (authenticated user) data
-  2. List user's repositories
-  3. Get repository issues
-  4. Test with invalid token (401 error)
-  5. Test with expired token
-  6. Test rate limit headers
+- [x] Write 6 authenticated tests:
+  1. Fetch authenticated user profile (viewer query)
+  2. List user's repositories with pagination
+  3. Get specific repository details with nested data
+  4. Validate rate limit information (rateLimit query + headers)
+  5. Handle invalid token (401 error)
+  6. Query data requiring repo scope (private repositories)
 
 **Example GitHub API Test:**
 ```typescript
@@ -755,8 +749,8 @@ it('should handle complex query within 2 seconds', async () => {
 
 ### Week 3 Deliverables Checklist
 
-- [ ] 10+ additional tests (auth, performance)
-- [ ] GitHub Actions CI/CD pipeline working
+- [x] 10+ additional tests (auth, performance) — 6 auth + 5 performance = 11
+- [x] GitHub Actions CI/CD pipeline working
 - [ ] Comprehensive documentation (README, ARCHITECTURE)
 - [ ] API coverage matrix
 - [ ] Test coverage reporting
@@ -822,13 +816,13 @@ graphql-api-testing-suite/
 ## Success Metrics
 
 ### Test Coverage Goals
-- **Minimum:** 40+ tests across all categories → ✅ 84 tests achieved
+- **Minimum:** 40+ tests across all categories → ✅ 90 tests achieved
 - **Target Breakdown:**
   - Queries: 15-20 tests → ✅ 17 (6 Countries + 2 SpaceX + 9 Rick & Morty)
   - Mutations: 4-5 tests → 3 implemented (SpaceX Hasura-style)
   - Schema: 5-6 tests → ✅ 52 (24 Countries + 28 SpaceX)
   - Errors: 5-6 tests → ✅ 7 implemented
-  - Auth: 5-6 tests (not yet started)
+  - Auth: 5-6 tests → ✅ 6 implemented (GitHub API)
   - Performance: 4-5 tests → ✅ 5 implemented
 
 ### Code Quality
@@ -962,4 +956,4 @@ npm run test:ci
 
 ---
 
-*Last Updated: February 5, 2026*
+*Last Updated: February 7, 2026*

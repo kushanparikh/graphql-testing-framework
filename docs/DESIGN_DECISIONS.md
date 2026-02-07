@@ -2,7 +2,7 @@
 
 **Project:** GraphQL API Testing Suite (Portfolio Project 2)  
 **Purpose:** Document technology choices and trade-offs  
-**Last Updated:** February 5, 2026
+**Last Updated:** February 7, 2026
 
 ---
 
@@ -25,6 +25,7 @@ This document captures the "why" behind major technology and architectural decis
 4. [Test Organization Strategy](#4-test-organization-strategy)
 5. [GraphQLTestClient Wrapper Design](#5-graphqltestclient-wrapper-design)
 6. [Schema Introspection Utilities](#6-schema-introspection-utilities)
+7. [GitHub API Authentication Strategy](#7-github-api-authentication-strategy)
 
 ---
 
@@ -658,13 +659,13 @@ The wrapper accepts both to ensure compatibility across APIs.
 
 | Method | Usage Count | Percentage |
 |--------|-------------|------------|
-| `request()` | 20 calls | 60.6% |
-| `rawRequest()` | 2 calls | 6.1% |
-| `requestExpectingError()` | 5 calls | 15.2% |
-| `measureQuery()` | 6 calls | 18.2% |
+| `request()` | 25 calls | 65.8% |
+| `rawRequest()` | 3 calls | 7.9% |
+| `requestExpectingError()` | 6 calls | 15.8% |
+| `measureQuery()` | 6 calls | 15.8% |
 | `batchRequests()` | 0 calls* | 0% |
 
-*Not supported by current test APIs. The remaining 52 tests (schema validation) use introspection utility functions rather than direct wrapper method calls.
+*Not supported by current test APIs. The remaining 52 tests (schema validation) use introspection utility functions rather than direct wrapper method calls. GitHub auth tests added 5 `request()` calls, 1 `rawRequest()` call, and 1 `requestExpectingError()` call.
 
 ---
 
@@ -797,4 +798,91 @@ beforeAll(async () => {
 
 ---
 
-*Last Updated: February 5, 2026*
+## 7. GitHub API Authentication Strategy
+
+### Decision: **Token-based auth with conditional suite skipping via `describe.skip`**
+
+### The Problem
+
+GitHub's GraphQL API requires authentication for all requests. This introduces several challenges for a testing framework:
+- Tests need a valid token to run, but tokens shouldn't be committed to source control
+- CI/CD environments provide tokens differently than local development
+- The test suite must gracefully handle missing tokens without failing the entire run
+
+### Alternatives Considered
+
+| Approach | Pros | Cons |
+|----------|------|------|
+| **`test.skip()` inside each test** | Per-test granularity | Jest disallows nested `test.skip()` inside running tests |
+| **`beforeAll` with conditional skip** | Familiar pattern | No clean way to skip remaining tests from `beforeAll` |
+| **Conditional `describe.skip`** | Suite-level skip, clean output | Requires token check at module scope |
+| **Separate Jest config/project** | Full isolation | Over-engineered for 6 tests |
+
+### Solution: Conditional `describe.skip` Pattern
+
+```typescript
+const describeWithAuth = GITHUB_TOKEN ? describe : describe.skip;
+
+describeWithAuth('GitHub API - Authentication', () => {
+    // All tests inside — skipped entirely if no token
+});
+```
+
+**Why This Pattern:**
+- **Clean skip behavior**: When no token is present, Jest reports the entire suite as skipped rather than showing individual failures
+- **No nested test issues**: Avoids the Jest restriction on calling `test.skip()` inside a running test body
+- **Non-null assertion safety**: Inside the `describeWithAuth` block, `GITHUB_TOKEN!` is safe because the block only executes when the token exists
+- **CI-friendly**: GitHub Actions auto-provides `GITHUB_TOKEN`, so tests run in CI without configuration
+
+### Environment Variable Loading
+
+**Decision:** Use `dotenv` with `.env` file at project root
+
+```typescript
+import dotenv from 'dotenv';
+dotenv.config({ path: '.env' });
+```
+
+**Why `dotenv`:**
+- Standard approach for Node.js projects (80M+ weekly downloads)
+- Separates secrets from code
+- `.env` file is gitignored, preventing accidental token commits
+- CI/CD environments set `GITHUB_TOKEN` natively (no `.env` needed)
+
+**Path resolution note:** `dotenv.config({ path: '.env' })` resolves relative to the process working directory (project root where `npm test` runs), not relative to the test file location.
+
+### Security Implementation
+
+| Layer | Approach |
+|-------|----------|
+| **Local dev** | Personal access token in `.env` file (gitignored) |
+| **CI/CD** | Auto-provided `GITHUB_TOKEN` from GitHub Actions |
+| **Missing token** | Suite gracefully skips with console warnings |
+| **Test scope** | Read-only queries only (no mutations against real GitHub data) |
+
+### Test Coverage (6 Tests)
+
+| Test | Purpose | Key Assertion |
+|------|---------|---------------|
+| Viewer profile | Token validity, basic auth | `viewer.login` is defined |
+| Repository listing | Pagination with auth | `repositories.totalCount >= 0` |
+| Repository details | Nested data with variables | `repository.name`, languages |
+| Rate limits | API metadata validation | `rateLimit.remaining > 0`, `resetAt` in future |
+| Invalid token | Error handling (401) | `requestExpectingError()` throws |
+| Token scopes | Permission-dependent queries | Private repo access with `repo` scope |
+
+### Trade-offs
+
+**What We Sacrifice:**
+- Tests cannot run without a valid GitHub token locally
+- Token management adds setup complexity for new contributors
+
+**What We Gain:**
+- Real API authentication testing (not mocked)
+- Graceful degradation when token is unavailable
+- CI/CD works out of the box with GitHub's auto-provided token
+- Demonstrates production-ready credential management patterns
+
+---
+
+*Last Updated: February 7, 2026*

@@ -59,6 +59,14 @@ jobs:
                 path: coverage/
                 retention-days: 14
 
+            - name: Upload HTML test report
+              uses: actions/upload-artifact@v4
+              if: ${{ !cancelled() }}
+              with:
+                name: html-test-report
+                path: html-report/
+                retention-days: 14
+
             - name: Upload test result on failure
               uses: actions/upload-artifact@v4
               if: ${{ failure() }}
@@ -66,5 +74,5 @@ jobs:
                 name: test-failure-details
                 path: |
                   jest-failures.json
-                  jest-html-reporter.html
+                  html-report/report.html
                 retention-days: 14

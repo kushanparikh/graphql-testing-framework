@@ -19,5 +19,20 @@ export default {
   },
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1'
-  }
+  },
+  reporters: [
+    'default',
+    [
+      'jest-html-reporters',
+      {
+        publicPath: './html-report',
+        filename: 'report.html',
+        pageTitle: 'GraphQL API Testing Suite - Test Report',
+        expand: true,
+        hideIcon: false,
+        logoImgPath: undefined,
+        inlineSource: false
+      }
+    ]
+  ]
 };
