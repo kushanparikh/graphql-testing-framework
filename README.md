@@ -100,6 +100,9 @@ graphql-api-testing-suite/
 │   ├── graphql-client.ts           # GraphQLTestClient wrapper
 │   └── schema-introspection.ts     # Schema introspection utilities
 ├── docs/                           # Documentation
+│   ├── ARCHITECTURE.md             # Framework architecture and patterns
+│   ├── LEARNING_NOTES.md           # GraphQL testing insights and reference
+│   ├── API_COVERAGE.md             # Coverage matrix and API details
 │   └── DESIGN_DECISIONS.md         # Technology choices and trade-offs
 ├── jest.config.js                  # Jest configuration (ESM)
 ├── tsconfig.json                   # TypeScript configuration
@@ -233,10 +236,11 @@ npm test -- queryOpsForCountries
 
 ## 📖 Documentation
 
+- **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - Framework architecture, design patterns, and data flows
+- **[LEARNING_NOTES.md](docs/LEARNING_NOTES.md)** - GraphQL testing concepts, patterns, and troubleshooting
+- **[API_COVERAGE.md](docs/API_COVERAGE.md)** - Coverage matrix, per-API details, and feature breakdown
 - **[DESIGN_DECISIONS.md](docs/DESIGN_DECISIONS.md)** - Technology choices and trade-offs
 - **[CHANGELOG.md](CHANGELOG.md)** - Version history and updates
-- **ARCHITECTURE.md** *(Coming soon)* - Framework architecture and patterns
-- **LEARNING_NOTES.md** *(Coming soon)* - GraphQL testing insights and learnings
 
 ---
 
@@ -249,7 +253,7 @@ This is **Project 2** of a 5-project SDET portfolio demonstrating modern test au
 
 **Portfolio Status:**
 - ✅ **Project 1**: Playwright + TypeScript Framework (Complete - 86 tests)
-- 🔨 **Project 2**: GraphQL API Testing Suite (In Progress - Week 2) ← *You are here*
+- 🔨 **Project 2**: GraphQL API Testing Suite (In Progress - Week 3, Documentation Complete) ← *You are here*
 - 📋 **Project 3**: gRPC Testing Harness (Planned - Feb 2026)
 - 📋 **Project 4**: Authentication Testing Framework (Planned - Feb-Mar 2026)
 - 📋 **Project 5**: Unified Test Reporting Platform (Planned - Mar 2026
@@ -258,12 +262,12 @@ This is **Project 2** of a 5-project SDET portfolio demonstrating modern test au
 
 ## 🔄 Project Status
 
-**Current Phase:** GitHub API Authentication (v0.8.0)
+**Current Phase:** Documentation Complete (v0.9.0)
 - ✅ Project structure created with category-based test organization
 - ✅ Dependencies installed
 - ✅ Jest + TypeScript + ESM configured
 - ✅ Design decisions documented
-- ✅ Query operations tests implemented (17 tests)
+- ✅ Query operations tests implemented (23 tests across 4 APIs)
 - ✅ Rick & Morty API query operations implemented (9 tests: fragments, aliases, pagination, nested traversal, multi-resource, filtering)
 - ✅ Mutation operations tests implemented (3 tests)
 - ✅ Error handling suite with cross-API coverage (7 tests)
@@ -273,11 +277,14 @@ This is **Project 2** of a 5-project SDET portfolio demonstrating modern test au
 - ✅ Schema introspection utilities created
 - ✅ Schema validation tests implemented (52 tests)
 - ✅ CI/CD pipeline implemented (GitHub Actions)
-- ✅ GitHub API authentication tests implemented (6 tests: viewer profile, repo listing, repo details, rate limits, invalid token handling, token scope validation)
+- ✅ GitHub API authentication tests implemented (6 tests)
+- ✅ ARCHITECTURE.md — Framework design, patterns, data flows, CI/CD architecture
+- ✅ LEARNING_NOTES.md — GraphQL concepts, patterns, troubleshooting, quick reference
+- ✅ API_COVERAGE.md — Coverage matrix, per-API details, feature matrix
 
 **Next Steps:**
-- Documentation polish (ARCHITECTURE.md, LEARNING_NOTES.md)
-- Final v1.0.0 release
+- Final code review and cleanup
+- v1.0.0 release tag
 
 ---
 
@@ -297,7 +304,7 @@ Purpose-built for testing scenarios. 28x smaller package size (5KB vs 140KB), cl
 
 See [CHANGELOG.md](CHANGELOG.md) for detailed version history.
 
-**Current Version:** v0.8.0 - GitHub API Authentication
+**Current Version:** v0.9.0 - Documentation (ARCHITECTURE.md, LEARNING_NOTES.md, API_COVERAGE.md)
 
 ---
 
@@ -342,4 +349,4 @@ This project is part of a professional portfolio and is available for review and
 
 ---
 
-*Last Updated: February 7, 2026*
+*Last Updated: February 8, 2026*

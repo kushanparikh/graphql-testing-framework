@@ -10,9 +10,54 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned
-- Mock GraphQL server for mutation testing
-- Comprehensive documentation (ARCHITECTURE.md, LEARNING_NOTES.md)
-- v1.0.0 production release
+- Final code review and cleanup
+- v1.0.0 production release tag
+
+---
+
+## [0.9.0] - 2026-02-08
+
+### Added
+- **`docs/ARCHITECTURE.md`** — Comprehensive framework architecture documentation
+  - Architecture principles (SoC, DRY, SRP, Composition)
+  - Framework layers diagram (Test → Client → Introspection → graphql-request → APIs)
+  - 4 design patterns documented: Client Wrapper, Schema Introspection, Category-Based Organization, Conditional Test Suite
+  - Data flow diagrams for test execution and schema validation
+  - Coverage philosophy (43.75% by design — integration focus over unit coverage)
+  - CI/CD architecture diagram with pipeline flow
+  - Scalability considerations for adding APIs, tests, and utility functions
+
+- **`docs/LEARNING_NOTES.md`** — Detailed personal learning reference
+  - GraphQL fundamentals with REST comparison
+  - Query, mutation, variable, fragment, and alias patterns with real code examples
+  - Schema introspection deep-dive including type unwrapping algorithm
+  - Authentication patterns (Bearer token, dotenv, describeWithAuth, CI token handling)
+  - Error handling patterns with category table
+  - Performance testing patterns with threshold rationale
+  - Jest + ESM configuration explained (why `npm test` works but `npx jest` doesn't)
+  - Common patterns, best practices, and troubleshooting notes
+  - Quick reference section (query patterns, Jest assertions, client methods)
+
+- **`docs/API_COVERAGE.md`** — Comprehensive coverage matrix and reference guide
+  - Coverage matrix (4 APIs × 6 test categories = 90 tests)
+  - Test distribution by category with percentages
+  - Per-API detail sections: endpoint, rate limits, batch support, quirks, test breakdown
+  - Feature coverage matrix (14 features across 4 APIs)
+  - Strategic API selection rationale with pros/cons for each API
+
+### Changed
+- **README.md** — Updated documentation section with links to all 4 docs (removed "Coming soon" labels)
+- **README.md** — Updated project status to reflect documentation completion
+- **TODO.md** — Marked Phase 12 (Documentation & Polish) as complete
+- **TODO.md** — Updated Week 3 deliverables checklist
+- **TODO.md** — Added v0.9.0 to version milestones
+- **plan.md** — Marked documentation tasks as complete
+
+### Technical Details
+- No test count changes (still 90 tests)
+- Documentation totals: ~1,800 lines across 3 new files
+- All docs cross-reference each other with consistent data (test counts, API endpoints, method names)
+- All docs reference v0.8.0 codebase (documentation describes current implementation)
 
 ---
 
@@ -276,6 +321,7 @@ The original per-API structure (`countries/`, `spaceX/`) lost meaning after sche
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 0.9.0 | 2026-02-08 | Documentation (ARCHITECTURE.md, LEARNING_NOTES.md, API_COVERAGE.md) |
 | 0.8.0 | 2026-02-07 | GitHub API authentication tests (6 tests) |
 | 0.7.0 | 2026-02-05 | Rick & Morty API query operations (9 tests) |
 | 0.6.0 | 2026-02-01 | Test structure restructuring (category-based organization) |
@@ -290,7 +336,8 @@ The original per-API structure (`countries/`, `spaceX/`) lost meaning after sche
 ## Upcoming Milestones
 
 ### v1.0.0 - Production Ready
-- Comprehensive documentation (ARCHITECTURE.md, LEARNING_NOTES.md)
+- Final code review and cleanup
+- Create release tag
 - Production-ready portfolio project
 
 ---
@@ -311,4 +358,4 @@ This changelog uses the following categories:
 
 *Changelog Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)*
 *Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html)*
-*Last Updated: February 7, 2026*
+*Last Updated: February 8, 2026*
