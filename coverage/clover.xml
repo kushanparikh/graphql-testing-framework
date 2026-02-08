@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1770561582643" clover="3.2.0">
+  <project timestamp="1770561582643" name="All files">
+    <metrics statements="88" coveredstatements="47" conditionals="30" coveredconditionals="11" methods="29" coveredmethods="12" elements="147" coveredelements="70" complexity="0" loc="88" ncloc="88" packages="1" files="2" classes="2"/>
+    <file name="graphql-client.ts" path="C:\Users\oasis\workspace\aiprojects\GRAPHQL_PROFESSIONAL_WORK\main\utils\graphql-client.ts">
+      <metrics statements="43" coveredstatements="18" conditionals="6" coveredconditionals="1" methods="13" coveredmethods="5"/>
+      <line num="27" count="10" type="stmt"/>
+      <line num="28" count="10" type="stmt"/>
+      <line num="33" count="10" type="cond" truecount="1" falsecount="1"/>
+      <line num="34" count="0" type="stmt"/>
+      <line num="37" count="10" type="stmt"/>
+      <line num="58" count="39" type="stmt"/>
+      <line num="59" count="39" type="stmt"/>
+      <line num="61" count="0" type="stmt"/>
+      <line num="95" count="2" type="stmt"/>
+      <line num="96" count="2" type="stmt"/>
+      <line num="99" count="2" type="stmt"/>
+      <line num="100" count="2" type="stmt"/>
+      <line num="102" count="2" type="stmt"/>
+      <line num="104" count="0" type="stmt"/>
+      <line num="128" count="5" type="stmt"/>
+      <line num="152" count="6" type="stmt"/>
+      <line num="154" count="6" type="stmt"/>
+      <line num="155" count="6" type="stmt"/>
+      <line num="156" count="6" type="stmt"/>
+      <line num="157" count="6" type="stmt"/>
+      <line num="159" count="6" type="stmt"/>
+      <line num="161" count="0" type="stmt"/>
+      <line num="162" count="0" type="stmt"/>
+      <line num="165" count="0" type="stmt"/>
+      <line num="166" count="0" type="stmt"/>
+      <line num="190" count="0" type="stmt"/>
+      <line num="191" count="0" type="stmt"/>
+      <line num="192" count="0" type="stmt"/>
+      <line num="194" count="0" type="stmt"/>
+      <line num="217" count="0" type="stmt"/>
+      <line num="237" count="0" type="stmt"/>
+      <line num="246" count="0" type="stmt"/>
+      <line num="262" count="0" type="cond" truecount="0" falsecount="2"/>
+      <line num="263" count="0" type="stmt"/>
+      <line num="264" count="0" type="stmt"/>
+      <line num="267" count="0" type="stmt"/>
+      <line num="276" count="0" type="cond" truecount="0" falsecount="2"/>
+      <line num="277" count="0" type="stmt"/>
+      <line num="285" count="0" type="stmt"/>
+      <line num="291" count="0" type="stmt"/>
+      <line num="293" count="0" type="stmt"/>
+      <line num="318" count="0" type="stmt"/>
+      <line num="319" count="0" type="stmt"/>
+    </file>
+    <file name="schema-introspection.ts" path="C:\Users\oasis\workspace\aiprojects\GRAPHQL_PROFESSIONAL_WORK\main\utils\schema-introspection.ts">
+      <metrics statements="45" coveredstatements="29" conditionals="24" coveredconditionals="10" methods="16" coveredmethods="7"/>
+      <line num="62" count="2" type="stmt"/>
+      <line num="72" count="2" type="stmt"/>
+      <line num="76" count="2" type="stmt"/>
+      <line num="77" count="131" type="stmt"/>
+      <line num="78" count="131" type="stmt"/>
+      <line num="100" count="11" type="stmt"/>
+      <line num="161" count="11" type="stmt"/>
+      <line num="202" count="11" type="cond" truecount="1" falsecount="1"/>
+      <line num="203" count="0" type="stmt"/>
+      <line num="206" count="11" type="stmt"/>
+      <line num="207" count="130" type="stmt"/>
+      <line num="208" count="130" type="stmt"/>
+      <line num="209" count="130" type="stmt"/>
+      <line num="212" count="130" type="stmt"/>
+      <line num="213" count="130" type="stmt"/>
+      <line num="214" count="201" type="cond" truecount="2" falsecount="0"/>
+      <line num="215" count="40" type="stmt"/>
+      <line num="216" count="40" type="stmt"/>
+      <line num="217" count="161" type="cond" truecount="2" falsecount="0"/>
+      <line num="218" count="31" type="stmt"/>
+      <line num="219" count="31" type="stmt"/>
+      <line num="221" count="130" type="cond" truecount="1" falsecount="1"/>
+      <line num="222" count="130" type="stmt"/>
+      <line num="226" count="130" type="stmt"/>
+      <line num="235" count="11" type="stmt"/>
+      <line num="242" count="22" type="cond" truecount="2" falsecount="0"/>
+      <line num="243" count="11" type="stmt"/>
+      <line num="244" count="130" type="stmt"/>
+      <line num="245" count="130" type="stmt"/>
+      <line num="255" count="11" type="stmt"/>
+      <line num="261" count="0" type="cond" truecount="2" falsecount="0"/>
+      <line num="284" count="0" type="stmt"/>
+      <line num="285" count="0" type="cond" truecount="0" falsecount="2"/>
+      <line num="286" count="0" type="stmt"/>
+      <line num="310" count="0" type="stmt"/>
+      <line num="311" count="0" type="cond" truecount="0" falsecount="2"/>
+      <line num="312" count="0" type="cond" truecount="0" falsecount="2"/>
+      <line num="329" count="0" type="stmt"/>
+      <line num="330" count="0" type="cond" truecount="0" falsecount="2"/>
+      <line num="347" count="0" type="stmt"/>
+      <line num="348" count="0" type="cond" truecount="0" falsecount="2"/>
+      <line num="366" count="0" type="stmt"/>
+      <line num="367" count="0" type="stmt"/>
+      <line num="385" count="0" type="stmt"/>
+      <line num="386" count="0" type="cond" truecount="0" falsecount="2"/>
+    </file>
+  </project>
+</coverage>
