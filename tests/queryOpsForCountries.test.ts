@@ -38,7 +38,9 @@ describe("Query Operations for Countries", () => {
     // Assert the status
     expect(response.status).toBe(200);
     // Assert response body type
-    expect(response.headers.get('content-type')).toContain('application/graphql-response+json');
+    // Either media type is valid per GraphQL-over-HTTP. The API's CDN cache ignores
+    // the Accept header, so it can replay another client's application/json response.
+    expect(response.headers.get('content-type')).toMatch(/^application\/(graphql-response\+)?json/);
     // Assert the response body structure
     expect(response.data).toBeDefined();
     expect(response.data.country).toBeDefined();
