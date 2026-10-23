@@ -309,13 +309,13 @@ it('should use fragments for character queries', async () => {
 **Recommended Approach:** Create mock server for mutation testing
 
 **Tasks:**
-- [ ] Set up local mock GraphQL server with mutations
-- [ ] Write 4-5 mutation tests:
+- [N/A] Set up local mock GraphQL server (used SpaceX Hasura instead)
+- [x] Write 4-5 mutation tests (4 done; #4 N/A):
   1. Create operation (add entity)
   2. Update operation (modify entity)
   3. Delete operation (remove entity)
-  4. Mutation with optimistic response
-  5. Mutation error handling
+  4. Mutation with optimistic response — N/A (client-cache feature; no cache in graphql-request)
+  5. Mutation error handling — ✅ done (validation error on undefined input field)
 
 **Mock Server Setup:**
 ```typescript
@@ -472,7 +472,7 @@ it('should handle missing required variables', async () => {
 ### Week 2 Deliverables Checklist
 
 - [x] 15-20 additional tests (mutations, schema, errors, Rick & Morty) — actual: 71 additional
-- [ ] Mock GraphQL server for mutation testing (used SpaceX Hasura instead)
+- [N/A] Mock GraphQL server for mutation testing (used SpaceX Hasura instead)
 - [x] Schema introspection utilities
 - [x] Error handling patterns documented
 - [x] Data-driven testing examples
@@ -713,8 +713,8 @@ it('should handle complex query within 2 seconds', async () => {
 - [x] Comprehensive documentation (ARCHITECTURE.md, LEARNING_NOTES.md, API_COVERAGE.md)
 - [x] API coverage matrix (docs/API_COVERAGE.md)
 - [x] Test coverage reporting (via CI/CD pipeline)
-- [ ] Final polish and code review
-- [ ] Create v1.0.0 release tag
+- [x] Final polish and code review (known issues in TODO.md)
+- [x] Create v1.0.0 release tag (tagged on abfac38)
 
 ---
 
@@ -775,10 +775,10 @@ graphql-api-testing-suite/
 ## Success Metrics
 
 ### Test Coverage Goals
-- **Minimum:** 40+ tests across all categories → ✅ 90 tests achieved
+- **Minimum:** 40+ tests across all categories → ✅ 107 tests achieved
 - **Target Breakdown:**
   - Queries: 15-20 tests → ✅ 17 (6 Countries + 2 SpaceX + 9 Rick & Morty)
-  - Mutations: 4-5 tests → 3 implemented (SpaceX Hasura-style)
+  - Mutations: 4-5 tests → ✅ 4 implemented (SpaceX Hasura-style)
   - Schema: 5-6 tests → ✅ 52 (24 Countries + 28 SpaceX)
   - Errors: 5-6 tests → ✅ 7 implemented
   - Auth: 5-6 tests → ✅ 6 implemented (GitHub API)
@@ -890,7 +890,7 @@ npm run test:coverage
 npm test countries-queries
 
 # Run tests in CI mode
-npm run test:ci
+CI=true npm test
 ```
 
 ---

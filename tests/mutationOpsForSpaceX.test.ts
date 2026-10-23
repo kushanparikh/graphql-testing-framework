@@ -69,4 +69,19 @@ describe("Mutation Operations for SpaceX", () => {
 
         expect(data.delete_users).toBeNull();
     });
+
+    test("insert_users with an undefined input field fails validation", async () => {
+        // Validation runs before execution, so nothing is written even if this passes
+        const mutation = `
+            mutation InsertUserInvalid {
+                insert_users(objects: { name: "Test User", nonexistentField: "x" }) {
+                    affected_rows
+                }
+            }
+        `;
+
+        await expect(client.request(mutation)).rejects.toThrow(
+            /Field "nonexistentField" is not defined by type "users_insert_input"/
+        );
+    });
 });

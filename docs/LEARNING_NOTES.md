@@ -718,8 +718,8 @@ It returns both the data (for functional assertions) and the execution time in m
 | Simple query (single resource) | 2,000ms | Network latency + minimal server work |
 | Large dataset (all countries) | 3,000ms | More data serialization |
 | Nested query (with relationships) | 3,000ms | Additional resolver calls |
-| Paginated (5 items) | 3,000ms | Standard page size |
-| Paginated (100 items) | 5,000ms | Stress test threshold |
+| Paginated (5 items) | 3,000ms | Standard page size (SpaceX checks suspended during outage) |
+| Paginated (100 items) | 5,000ms | Stress test threshold (SpaceX checks suspended during outage) |
 
 **Why these thresholds?** These are generous limits meant to catch regressions, not measure absolute performance. Public APIs have variable latency depending on geography, load, and caching. The goal is "responds in reasonable time," not "responds in exactly X ms."
 
@@ -900,11 +900,11 @@ Everything else (90% of tests):
 
 **Solution:** Documented in test files as comments. `batchRequests()` works with APIs that support it (e.g., Hasura with batching enabled, Apollo Server with batching plugin).
 
-### Coverage Looks Low (43.75%)
+### Coverage Numbers (95.69% lines)
 
-**This is by design.** See the [coverage philosophy in ARCHITECTURE.md](./ARCHITECTURE.md#coverage-philosophy).
+See the [coverage philosophy in ARCHITECTURE.md](./ARCHITECTURE.md#coverage-philosophy).
 
-The 90 tests exercise real API behavior through integration testing. The utility modules are tested indirectly — every public method is called by at least one test suite. Adding unit tests for the wrapper would mean mocking `graphql-request`, which tests the mock rather than real behavior.
+The 91 API tests exercise real API behavior through integration testing. 16 utility tests cover the wrapper's own paths (connection failures, HTTP errors, batching), and every public method is called by at least one test. Mocking `graphql-request` would test the mock rather than real behavior.
 
 ### GitHub Auth Tests Locally
 
@@ -921,7 +921,7 @@ The 90 tests exercise real API behavior through integration testing. The utility
 
 **Problem:** SpaceX mutation tests assert `toBeNull()` which seems like a failure.
 
-**Explanation:** The SpaceX API exposes mutation operations in its schema but disables them for public access. The mutations execute without error but return `null`. This is valid behavior — the tests verify the mutation syntax is correct and document the API's public access limitations.
+**Explanation:** The SpaceX API exposes mutation operations in its schema but disables them for public access. The mutations execute without error but return `null`. This is valid behavior — the tests verify the mutation syntax is correct and document the API's public access limitations. Validation still runs, though: a mutation with an undefined input field returns `GRAPHQL_VALIDATION_FAILED`, which the validation test asserts.
 
 ### Schema Fields Missing
 

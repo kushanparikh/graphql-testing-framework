@@ -430,7 +430,7 @@ tests/
 ├── queryOpsForCountries.test.ts        # Countries API query tests (6)
 ├── queryOpsForSpaceX.test.ts           # SpaceX API query tests (2)
 ├── queryOpsForRickAndMorty.test.ts     # Rick & Morty API query tests (9)
-├── mutationOpsForSpaceX.test.ts        # SpaceX API mutation tests (3)
+├── mutationOpsForSpaceX.test.ts        # SpaceX API mutation tests (4)
 ├── errors/
 │   └── error-handling.test.ts          # Cross-API error handling (7)
 ├── performance/
@@ -509,6 +509,7 @@ Rather than skipping these tests, we:
 1. Execute the mutations with correct Hasura syntax
 2. Assert they return `null`
 3. Document the behavior in test names and comments
+4. Send a mutation with an undefined input field and assert the validation error, which confirms validation still runs before execution
 
 **Why Test Disabled Mutations?**
 

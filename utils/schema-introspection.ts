@@ -203,7 +203,7 @@ export async function getTypeDetails(
     return null;
   }
 
-  const parseFieldType = (typeObj: any): FieldInfo => {
+  const parseFieldType = (typeObj: any): { type: string; isRequired: boolean; isArray: boolean } => {
     let typeName = '';
     let isRequired = false;
     let isArray = false;
@@ -223,13 +223,7 @@ export async function getTypeDetails(
       }
     }
 
-    return {
-      name: '',
-      type: typeName,
-      isRequired,
-      isArray,
-      description: null,
-    };
+    return { type: typeName, isRequired, isArray };
   };
 
   const mapFields = (
@@ -326,8 +320,11 @@ export async function getFieldInfo(
  * expect(queries).toContain('countries');
  */
 export async function getAvailableQueries(client: GraphQLTestClient): Promise<string[]> {
-  const fields = await getTypeFields(client, 'Query');
-  return fields || [];
+  const details = await getTypeDetails(client, 'Query');
+  if (!details) {
+    throw new Error('Schema has no Query type; every GraphQL schema must define one');
+  }
+  return details.fields?.map((f) => f.name) ?? [];
 }
 
 /**
@@ -344,8 +341,10 @@ export async function getAvailableQueries(client: GraphQLTestClient): Promise<st
  * expect(mutations).toContain('insert_users');
  */
 export async function getAvailableMutations(client: GraphQLTestClient): Promise<string[]> {
-  const fields = await getTypeFields(client, 'Mutation');
-  return fields || [];
+  const details = await getTypeDetails(client, 'Mutation');
+  // A missing Mutation type is valid for read-only APIs, so [] is correct here
+  if (!details) return [];
+  return details.fields?.map((f) => f.name) ?? [];
 }
 
 /**

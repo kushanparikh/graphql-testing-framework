@@ -272,8 +272,20 @@ export class GraphQLTestClient {
       );
     }
 
-    // Network/request errors
-    if (error.request) {
+    // HTTP error with a non-GraphQL body (e.g. 401 with a JSON message).
+    // graphql-request's ClientError also carries `request` (the query payload),
+    // so this must be checked before the network branch.
+    if (error.response) {
+      return new Error(
+        `HTTP ${error.response.status} at ${this.endpoint}\n` +
+        `Query: ${query.substring(0, 150)}...\n` +
+        `Variables: ${JSON.stringify(variables)}\n` +
+        `Original error: ${error.message}`
+      );
+    }
+
+    // Network failures: no HTTP response, and fetch reports a transport error
+    if (/fetch failed|ECONNREFUSED|ENOTFOUND|network/i.test(String(error.message))) {
       return new Error(
         `Network Error: Unable to reach ${this.endpoint}\n` +
         `Query: ${query.substring(0, 150)}...\n` +

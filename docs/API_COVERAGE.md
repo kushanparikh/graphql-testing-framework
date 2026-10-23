@@ -10,7 +10,7 @@
 
 This test suite validates GraphQL operations against **4 public GraphQL APIs**, each selected to demonstrate specific testing patterns and GraphQL concepts. Together they cover the full spectrum of GraphQL testing: queries, mutations, schema validation, error handling, authentication, and performance.
 
-**Total: 90 tests across 9 test files**
+**Total: 107 tests across 11 test files** (91 API-bound, 16 utility)
 
 ---
 
@@ -19,12 +19,14 @@ This test suite validates GraphQL operations against **4 public GraphQL APIs**, 
 | API | Endpoint | Queries | Mutations | Schema | Auth | Performance | Error | Total |
 |-----|----------|---------|-----------|--------|------|-------------|-------|-------|
 | **Countries** | `countries.trevorblades.com` | 6 | 0 | 24 | 0 | 3 | 5 | **38** |
-| **SpaceX** | `spacex-production.up.railway.app` | 2 | 3 | 28 | 0 | 2 | 2 | **37** |
+| **SpaceX** | `spacex-production.up.railway.app` | 2 | 4 | 28 | 0 | 2 | 2 | **38** |
 | **Rick & Morty** | `rickandmortyapi.com/graphql` | 9 | 0 | 0 | 0 | 0 | 0 | **9** |
 | **GitHub** | `api.github.com/graphql` | 6 | 0 | 0 | 6 | 0 | 0 | **6** |
-| **Total** | | **23** | **3** | **52** | **6** | **5** | **7** | **90** |
+| **Total** | | **23** | **4** | **52** | **6** | **5** | **7** | **91** |
 
 > **Note:** Auth tests are a subset of the GitHub query count (all 6 GitHub tests exercise authentication). The column separates them for visibility into the auth pattern.
+>
+> **Note:** The matrix counts API-bound tests only. The 16 utility tests in `tests/utils/` run against the Countries and GitHub endpoints and test the client itself; they appear in the distribution table below.
 
 ---
 
@@ -32,15 +34,16 @@ This test suite validates GraphQL operations against **4 public GraphQL APIs**, 
 
 | Category | Count | Percentage | Files |
 |----------|-------|------------|-------|
-| Schema Validation | 52 | 57.8% | `countries-schema.test.ts`, `spacex-schema.test.ts` |
-| Query Operations | 23 | 25.6% | `queryOpsForCountries.test.ts`, `queryOpsForSpaceX.test.ts`, `queryOpsForRickAndMorty.test.ts`, `queryOpsForGitHubAuth.test.ts` |
-| Error Handling | 7 | 7.8% | `error-handling.test.ts` |
-| Performance | 5 | 5.5% | `performance.test.ts` |
-| Mutation Operations | 3 | 3.3% | `mutationOpsForSpaceX.test.ts` |
+| Schema Validation | 52 | 48.6% | `countries-schema.test.ts`, `spacex-schema.test.ts` |
+| Query Operations | 23 | 21.5% | `queryOpsForCountries.test.ts`, `queryOpsForSpaceX.test.ts`, `queryOpsForRickAndMorty.test.ts`, `queryOpsForGitHubAuth.test.ts` |
+| Error Handling | 7 | 6.5% | `error-handling.test.ts` |
+| Performance | 5 | 4.7% | `performance.test.ts` |
+| Mutation Operations | 4 | 3.7% | `mutationOpsForSpaceX.test.ts` |
+| Utility Helpers | 16 | 15.0% | `utils/graphql-client-methods.test.ts`, `utils/schema-introspection-helpers.test.ts` |
 
-**Schema validation (57.8%)** forms the largest category because it validates the API contract programmatically — type existence, field types, required/optional fields, and relationships. This is the most valuable category for regression detection.
+**Schema validation (48.6%)** forms the largest category because it validates the API contract programmatically — type existence, field types, required/optional fields, and relationships. This is the most valuable category for regression detection.
 
-**Query operations (25.6%)** cover the breadth of GraphQL query features: variables, nesting, filtering, pagination, fragments, aliases, and multi-resource queries.
+**Query operations (21.5%)** cover the breadth of GraphQL query features: variables, nesting, filtering, pagination, fragments, aliases, and multi-resource queries.
 
 ---
 
@@ -95,16 +98,17 @@ This test suite validates GraphQL operations against **4 public GraphQL APIs**, 
 - Uses `limit` argument for pagination (not page-based)
 - Has deeply nested type relationships: Launch -> LaunchRocket -> Rocket
 - The `LaunchRocket` type is a join type between `Launch` and `Rocket`
+- **Current upstream outage:** `api.spacexdata.com` returns HTML error pages. The gateway replies HTTP 200 with `launches: null` and `INTERNAL_SERVER_ERROR`. SpaceX tests assert this failure as `[KNOWN OUTAGE]` negative tests, which fail once the upstream recovers
 
 **Test Coverage Breakdown:**
 
 | File | Tests | Patterns Demonstrated |
 |------|-------|-----------------------|
-| `queryOpsForSpaceX.test.ts` | 2 | Paginated queries, response metadata via `rawRequest()` |
-| `mutationOpsForSpaceX.test.ts` | 3 | Hasura insert, update, delete mutations (return null) |
+| `queryOpsForSpaceX.test.ts` | 2 | Upstream-outage negative tests via `request()` and `rawRequest()` |
+| `mutationOpsForSpaceX.test.ts` | 4 | Hasura insert, update, delete mutations (return null); validation-error test |
 | `spacex-schema.test.ts` | 28 | Type existence (6+ types), field validation, mutation operations, relationships |
 | `error-handling.test.ts` (SpaceX section) | 2 | Non-existent fields, invalid variable types |
-| `performance.test.ts` (SpaceX section) | 2 | Paginated (5 items), stress test (100 items) |
+| `performance.test.ts` (SpaceX section) | 2 | Upstream-outage negative tests (5 and 100 items); latency checks suspended |
 
 **Schema Types Validated:**
 - `Launch` — 8 fields validated (id, mission_name, launch_date_utc, launch_success, rocket, launch_site, links, details)
@@ -245,6 +249,7 @@ This test suite validates GraphQL operations against **4 public GraphQL APIs**, 
 
 **Cons:**
 - Mutations return `null` (disabled for public access)
+- Mutations with an undefined input field fail validation (`GRAPHQL_VALIDATION_FAILED`), so the validation path is reachable without writing data
 - No batch support
 - Occasional downtime (community-maintained)
 

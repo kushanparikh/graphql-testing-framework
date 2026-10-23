@@ -120,22 +120,23 @@ This framework demonstrates comprehensive GraphQL testing capabilities:
 | Category | Test File | Tests | Description |
 |----------|-----------|-------|-------------|
 | **Query Operations** | `queryOpsForCountries.test.ts` | 6 | Basic queries, variables, nested data, filtering |
-| **Query Operations** | `queryOpsForSpaceX.test.ts` | 2 | Paginated queries, response metadata |
+| **Query Operations** | `queryOpsForSpaceX.test.ts` | 2 | Negative tests during upstream outage (`[KNOWN OUTAGE]`) |
 | **Query Operations** | `queryOpsForRickAndMorty.test.ts` | 9 | Fragments, aliases, pagination, nested traversal, multi-resource, filtering |
-| **Mutation Operations** | `mutationOpsForSpaceX.test.ts` | 3 | Hasura-style mutations (insert, update, delete) |
+| **Mutation Operations** | `mutationOpsForSpaceX.test.ts` | 4 | Hasura-style mutations (insert, update, delete) + validation-error test |
 | **Authentication** | `queryOpsForGitHubAuth.test.ts` | 6 | Authenticated queries, rate limits, invalid tokens, token scopes |
 | **Error Handling** | `errors/error-handling.test.ts` | 7 | Invalid inputs, syntax errors, type violations |
 | **Performance** | `performance/performance.test.ts` | 5 | Query benchmarks, comparative timing |
 | **Schema Validation** | `schema/countries-schema.test.ts` | 24 | Types, fields, relationships, queries |
 | **Schema Validation** | `schema/spacex-schema.test.ts` | 28 | Types, fields, queries, mutations, relationships |
-| **Total** | | **90** | |
+| **Utility Helpers** | `tests/utils/` (2 files) | 16 | Client methods, network failures, schema helper lookups |
+| **Total** | | **107** | |
 
 ### Test Categories
 
 | Category | Status | Details |
 |----------|--------|---------|
 | **Query Operations** | ✅ Implemented | Basic queries, variables, nested objects, arrays, filtering, fragments, aliases, pagination, nested traversal, multi-resource queries |
-| **Mutation Operations** | ✅ Implemented | Hasura-style CRUD mutations (API returns null - read-only) |
+| **Mutation Operations** | ✅ Implemented | Hasura-style CRUD mutations (API returns null - read-only) + validation-error test |
 | **Error Handling** | ✅ Implemented | Invalid inputs, syntax errors, missing variables |
 | **Performance Testing** | ✅ Implemented | Query timing with `measureQuery()` |
 | **Response Validation** | ✅ Implemented | Status codes, content-type headers via `rawRequest()` |
@@ -208,7 +209,7 @@ This framework tests against multiple public GraphQL APIs:
 | API | Endpoint | Features Tested |
 |-----|----------|-----------------|
 | **Countries API** | https://countries.trevorblades.com/ | Queries, variables, nested data, filtering, error handling |
-| **SpaceX API** | https://spacex-production.up.railway.app/ | Paginated queries, Hasura-style mutations |
+| **SpaceX API** | https://spacex-production.up.railway.app/ | Paginated queries (negative tests during upstream outage), Hasura-style mutations |
 | **Rick and Morty API** | https://rickandmortyapi.com/graphql | Fragments, aliases, pagination, nested traversal, multi-resource queries, filtering |
 | **GitHub GraphQL API** | https://api.github.com/graphql | Authentication, rate limiting, token validation, repo queries |
 
@@ -253,7 +254,7 @@ This is **Project 2** of a 5-project SDET portfolio demonstrating modern test au
 
 **Portfolio Status:**
 - ✅ **Project 1**: Playwright + TypeScript Framework (Complete - 86 tests)
-- 🔨 **Project 2**: GraphQL API Testing Suite (In Progress - Week 3, Documentation Complete) ← *You are here*
+- ✅ **Project 2**: GraphQL API Testing Suite (v1.0.0 tagged; final review done) ← *You are here*
 - 📋 **Project 3**: gRPC Testing Harness (Planned - Feb 2026)
 - 📋 **Project 4**: Authentication Testing Framework (Planned - Feb-Mar 2026)
 - 📋 **Project 5**: Unified Test Reporting Platform (Planned - Mar 2026
@@ -262,14 +263,14 @@ This is **Project 2** of a 5-project SDET portfolio demonstrating modern test au
 
 ## 🔄 Project Status
 
-**Current Phase:** Documentation Complete (v0.9.0)
+**Current Phase:** v1.0.0 tagged (final review done; known issues open)
 - ✅ Project structure created with category-based test organization
 - ✅ Dependencies installed
 - ✅ Jest + TypeScript + ESM configured
 - ✅ Design decisions documented
 - ✅ Query operations tests implemented (23 tests across 4 APIs)
 - ✅ Rick & Morty API query operations implemented (9 tests: fragments, aliases, pagination, nested traversal, multi-resource, filtering)
-- ✅ Mutation operations tests implemented (3 tests)
+- ✅ Mutation operations tests implemented (4 tests)
 - ✅ Error handling suite with cross-API coverage (7 tests)
 - ✅ Performance benchmarking suite with comparative tests (5 tests)
 - ✅ JSDoc documentation added to all test files
@@ -283,8 +284,8 @@ This is **Project 2** of a 5-project SDET portfolio demonstrating modern test au
 - ✅ API_COVERAGE.md — Coverage matrix, per-API details, feature matrix
 
 **Next Steps:**
-- Final code review and cleanup
-- v1.0.0 release tag
+- Address known review items (see TODO.md)
+- Restore SpaceX positive tests when the upstream recovers
 
 ---
 

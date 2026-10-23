@@ -13,7 +13,7 @@ This project is a professional GraphQL API integration testing framework built w
 The architecture prioritizes **clarity**, **reusability**, and **real-world testing patterns** over abstraction for its own sake. Every layer exists because tests needed it, not because a design pattern prescribed it.
 
 **Key metrics:**
-- **90 tests** across 9 test files (225% of the original 40-test goal)
+- **107 tests** across 11 test files (268% of the original 40-test goal)
 - **4 public GraphQL APIs** exercised against real endpoints
 - **2 reusable utility modules** (client wrapper + schema introspection)
 - **CI/CD pipeline** with GitHub Actions, coverage reporting, and artifact archival
@@ -148,7 +148,7 @@ The `parseFieldType()` function walks this chain to extract:
 
 This handles up to 4 levels of nesting, covering all practical GraphQL type combinations.
 
-**Caching Strategy:**
+**Caching Strategy (test-level):**
 
 Schema introspection queries hit real APIs, so test suites fetch all needed type data once in `beforeAll` using `Promise.all()`:
 
@@ -166,7 +166,7 @@ beforeAll(async () => {
 });
 ```
 
-This reduces API calls from ~24 (one per test) to ~6 (one burst) for the Countries schema suite, and from ~28 to ~7 for SpaceX.
+This reduces API calls from ~24 (one per test) to ~6 (one burst) for the Countries schema suite, and from ~28 to ~7 for SpaceX. The utilities themselves don't cache; the caching is at the test-suite level.
 
 ### 3. Category-Based Test Organization
 
@@ -235,19 +235,22 @@ graphql-api-testing-suite/
 │   ├── ARCHITECTURE.md                 # This file
 │   ├── LEARNING_NOTES.md               # GraphQL testing insights
 │   └── API_COVERAGE.md                 # Coverage matrix
-├── tests/                              # 9 test files, 90 tests
+├── tests/                              # 11 test files, 107 tests
 │   ├── queryOpsForCountries.test.ts    #   6 tests
 │   ├── queryOpsForSpaceX.test.ts       #   2 tests
 │   ├── queryOpsForRickAndMorty.test.ts #   9 tests
 │   ├── queryOpsForGitHubAuth.test.ts   #   6 tests
-│   ├── mutationOpsForSpaceX.test.ts    #   3 tests
+│   ├── mutationOpsForSpaceX.test.ts    #   4 tests
 │   ├── errors/
 │   │   └── error-handling.test.ts      #   7 tests
 │   ├── performance/
 │   │   └── performance.test.ts         #   5 tests
-│   └── schema/
+│   ├── schema/
 │       ├── countries-schema.test.ts    #  24 tests
 │       └── spacex-schema.test.ts       #  28 tests
+│   └── utils/
+│       ├── graphql-client-methods.test.ts         #   7 tests
+│       └── schema-introspection-helpers.test.ts   #   9 tests
 ├── utils/                              # 2 utility modules
 │   ├── graphql-client.ts               # GraphQLTestClient wrapper (320 lines)
 │   └── schema-introspection.ts         # Introspection utilities (388 lines)
@@ -316,16 +319,16 @@ Schema Test File
 | Category | Tests | Purpose |
 |----------|-------|---------|
 | **Query Operations** | 23 | Validate GraphQL query syntax, variables, nesting, filtering, pagination, fragments, aliases |
-| **Mutation Operations** | 3 | Demonstrate Hasura-style mutation syntax (insert, update, delete) |
+| **Mutation Operations** | 4 | Demonstrate Hasura-style mutation syntax (insert, update, delete) and validation errors |
 | **Schema Validation** | 52 | Verify type existence, field types, required/optional fields, relationships |
 | **Error Handling** | 7 | Test invalid inputs, syntax errors, missing variables, non-existent fields |
 | **Performance** | 5 | Benchmark query execution times, compare simple vs. complex queries |
 
 ### Coverage Philosophy
 
-**Code coverage: 43.75%** — This is intentional and by design.
+**Code coverage: 95.69% lines** (93.13% statements, 80.55% branches, 90.32% functions), measured over `utils/`.
 
-This suite focuses on **integration testing** against real GraphQL APIs. The utility modules (`graphql-client.ts` and `schema-introspection.ts`) are tested indirectly through the 90 integration tests that exercise them. Every public method of `GraphQLTestClient` is called by at least one test file:
+This suite focuses on **integration testing** against real GraphQL APIs. The utility modules (`graphql-client.ts` and `schema-introspection.ts`) are exercised by the 91 API tests and directly by 16 utility tests in `tests/utils/`. Every public method of `GraphQLTestClient` is called by at least one test file:
 
 | Method | Exercised By |
 |--------|-------------|
@@ -333,14 +336,16 @@ This suite focuses on **integration testing** against real GraphQL APIs. The uti
 | `rawRequest()` | Countries, SpaceX, GitHub (rate limits) |
 | `requestExpectingError()` | Error handling suite, GitHub (invalid token) |
 | `measureQuery()` | Performance suite |
-| `batchRequests()` | Documented as unsupported by tested APIs |
+| `batchRequests()` | Utility tests (Countries rejects batching) |
+| `setHeaders()` | Utility tests |
+| `getEndpoint()` | Utility tests |
 | `setAuthToken()` | GitHub auth tests |
 
-**Why not higher coverage?**
+**Why this coverage level?**
 
-- Integration test frameworks typically achieve 40–60% code coverage. The value is in exercising real API behavior, not in mocking transport internals.
-- Adding unit tests for the client wrapper would mean mocking `graphql-request` — testing our mock, not real behavior.
-- The 90 tests validate that every utility function works correctly against production APIs. That's stronger validation than unit tests with mocked responses.
+- Most coverage comes from tests that hit real APIs. The value is in exercising real behavior, not in mocking transport internals.
+- The wrapper's own failure paths (connection refused, HTTP errors, batching) are tested against real endpoints, not mocks.
+- The 107 tests validate that every utility function works correctly against production APIs. That's stronger validation than unit tests with mocked responses.
 
 ---
 
@@ -400,7 +405,7 @@ Detailed rationale for each technology choice is documented in [DESIGN_DECISIONS
 
 ### Integration Focus over Unit Coverage
 
-**43.75% line coverage with 90 tests** — Every test hits a real API.
+**95.69% line coverage with 107 tests** — Tests hit real APIs, except one that checks connection-refused handling against a closed local port.
 **Rationale:** The alternative (mocking `graphql-request`) would test our mocks, not real API behavior. Integration tests against production endpoints provide stronger confidence than isolated unit tests with synthetic responses.
 
 ---
@@ -438,4 +443,4 @@ This architecture demonstrates:
 5. **Intentional trade-offs** — Integration focus over unit coverage, industry-standard tools over technically superior alternatives
 6. **Scalable structure** — Adding APIs or test categories requires no changes to the utility layer
 
-The 90-test suite validates real API behavior across query operations, mutations, schema structure, error handling, authentication, and performance — exercising every public method of the utility layer against production endpoints.
+The 107-test suite validates real API behavior across query operations, mutations, schema structure, error handling, authentication, and performance — exercising every public method of the utility layer against production endpoints.

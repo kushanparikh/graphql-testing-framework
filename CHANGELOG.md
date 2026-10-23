@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Added
+- `mutationOpsForSpaceX.test.ts`: validation-error test (`insert_users` with an undefined input field). Suite total is now 107 tests, 4 of them mutations.
+- Utility tests in `tests/utils/` (16 tests): `getEndpoint`, `setHeaders`, `setAuthToken`, constructor token, the `batchRequests` error path, `measureQueryPerformance`, connection-refused handling, and the schema helper lookups.
+
+### Changed
+- SpaceX query and latency tests now assert the upstream outage as `[KNOWN OUTAGE]` negative tests, so CI is green while `api.spacexdata.com` is failing. Each test fails once the upstream recovers.
+- Test timeout raised to 30 s in the SpaceX query and performance files.
+- Corrected the documented coverage figure. The old 43.75% was the function coverage for `schema-introspection.ts`; line coverage is 95.69% (measured).
+- Marked the v1.0.0 release tag and CHANGELOG finalization as complete in TODO.md and plan.md.
+- `package.json`: real name, description, author, MIT license, `private: true`; removed the `main` field that pointed to a missing `index.js`.
+- `jest.config.js`: 80% coverage threshold for lines, statements, functions, and branches.
+- `jest.config.js`: `maxWorkers: 1`. Parallel test files exceeded the Countries API rate limit ("retry after 13s") once the utility tests were added.
+
+### Fixed
+- `enhanceError`: HTTP errors (e.g. a 401) were reported as "Network Error" because graphql-request's `ClientError` also carries `request`. HTTP errors now report their status, and network errors are detected from the transport failure.
+
+### Fixed
+- `schema-introspection.ts`: removed the placeholder `name` and `description` fields from `parseFieldType`, which `mapFields` overwrote.
+- `getAvailableQueries` now throws when the schema has no Query type. `getAvailableMutations` still returns `[]` when there is no Mutation type, since read-only APIs are valid.
+
+### Notes
+- Final code review completed; known issues are listed in TODO.md.
+- Optimistic-response mutation test dropped as N/A: `graphql-request` has no client cache.
+- Mutation counts updated in README, TODO, plan, API_COVERAGE, ARCHITECTURE, DESIGN_DECISIONS, and LEARNING_NOTES.
+
 ## [1.0.0] - 2026-02-08
    
    ### 🎉 Official Release

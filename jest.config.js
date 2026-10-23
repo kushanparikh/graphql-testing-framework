@@ -3,8 +3,19 @@ export default {
   preset: 'ts-jest/presets/default-esm',
   testEnvironment: 'node',
   roots: ['<rootDir>/tests'],
+  // Run test files one at a time: parallel workers exceed the Countries API rate limit
+  maxWorkers: 1,
   testMatch: ['**/*.test.ts'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
+  // Enforced by `npm run test:coverage` (applies only when coverage is collected)
+  coverageThreshold: {
+    global: {
+      lines: 80,
+      statements: 80,
+      functions: 80,
+      branches: 80
+    }
+  },
   extensionsToTreatAsEsm: ['.ts'],
   transform: {
     '^.+\\.tsx?$': [

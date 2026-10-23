@@ -1,9 +1,9 @@
 {
-  "name": "framework",
+  "name": "graphql-testing-framework",
   "version": "1.0.0",
-  "description": "",
+  "description": "GraphQL API integration test suite (Jest + TypeScript) across four public APIs",
+  "private": true,
   "type": "module",
-  "main": "index.js",
   "directories": {
     "doc": "docs"
   },
@@ -12,9 +12,14 @@
     "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
     "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "graphql",
+    "api-testing",
+    "jest",
+    "typescript"
+  ],
+  "author": "Kushan Parikh",
+  "license": "MIT",
   "devDependencies": {
     "@types/jest": "^30.0.0",
     "@types/node": "^25.0.9",
