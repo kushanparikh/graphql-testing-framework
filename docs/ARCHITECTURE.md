@@ -355,19 +355,24 @@ This suite focuses on **integration testing** against real GraphQL APIs. The uti
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│                   GitHub Actions Trigger                  │
+│                   GitHub Actions Trigger                 │
 │  push to main · pull request to main · manual dispatch   │
+│  nightly schedule (06:15 UTC)                            │
 ├──────────────────────────────────────────────────────────┤
 │                                                          │
 │  1. Checkout code         actions/checkout@v5            │
-│  2. Setup Node.js         actions/setup-node@v5 (LTS)   │
+│  2. Setup Node.js         actions/setup-node@v5 (LTS)    │
 │  3. Install deps          npm ci (reproducible)          │
-│  4. Run tests             npm test                       │
-│     ├─ GITHUB_TOKEN ← secrets.GITHUB_TOKEN (auto)       │
-│     └─ CI=true                                           │
+│  4. Run tests             npm test -- --json             │
+│     ├─ GITHUB_TOKEN ← secrets.GITHUB_TOKEN (auto)        │
+│     ├─ CI=true                                           │
+│     └─ writes results/jest.json                          │
 │  5. Coverage report       npm run test:coverage          │
+│     └─ skipped on scheduled runs                         │
 │  6. Upload artifacts      coverage/ + html-report/       │
 │     └─ 14-day retention                                  │
+│  7. Upload utr-results    results/jest.json              │
+│     └─ 90-day retention                                  │
 │                                                          │
 └──────────────────────────────────────────────────────────┘
 ```
@@ -377,7 +382,7 @@ This suite focuses on **integration testing** against real GraphQL APIs. The uti
 - **`npm test` not `npx jest`** — The test script in `package.json` includes `--experimental-vm-modules`, which is required for ESM support. Running `npx jest` directly skips this flag and fails.
 - **Auto-provided `GITHUB_TOKEN`** — GitHub Actions provides a scoped token automatically. No manual secret configuration needed for the GitHub API auth tests.
 - **Artifact archival** — Coverage reports and HTML test reports are uploaded as artifacts on every run (not just failures) for 14-day retention.
-- **Failure-specific artifacts** — On test failure, additional debug artifacts (`jest-failures.json`) are uploaded.
+- **Machine-readable results** — Every run also uploads Jest's JSON output as a `utr-results` artifact (90-day retention) for [unified-test-reporting](https://github.com/kushanparikh/unified-test-reporting) to collect. Scheduled nightly runs build trend history and skip the coverage re-run so the suite runs once.
 
 ---
 
