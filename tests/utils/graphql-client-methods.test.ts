@@ -1,5 +1,7 @@
 import { GraphQLTestClient, measureQueryPerformance } from '../../utils/graphql-client.ts';
-import { describe, expect, test } from '@jest/globals';
+import { afterEach, describe, expect, test } from '@jest/globals';
+import { createServer, type Server } from 'node:http';
+import type { AddressInfo } from 'node:net';
 
 /**
  * GraphQLTestClient Utility Method Tests
@@ -10,6 +12,7 @@ import { describe, expect, test } from '@jest/globals';
  * - batchRequests() error path (Countries rejects batching)
  * - measureQueryPerformance() standalone helper
  * - enhanceError() network-failure branch (connection refused)
+ * - timeoutMs option and enhanceError() timeout branch (local server that never responds)
  *
  * All tests are read-only.
  */
@@ -89,6 +92,31 @@ describe('GraphQLTestClient – network failures', () => {
 
     await expect(client.request('query { __typename }')).rejects.toThrow(
       /Network Error: Unable to reach http:\/\/127\.0\.0\.1:1\/graphql/
+    );
+  });
+});
+
+describe('GraphQLTestClient – timeouts', () => {
+  let server: Server | undefined;
+
+  // Runs even if the test times out, so a stalled request never leaves the server open
+  afterEach(async () => {
+    if (!server) return;
+    server.closeAllConnections();
+    await new Promise<void>((resolve) => server!.close(() => resolve()));
+    server = undefined;
+  });
+
+  test('a request with no response within timeoutMs is reported as a timeout', async () => {
+    // Accepts the connection but never answers, like a stalled upstream
+    server = createServer(() => {});
+    await new Promise<void>((resolve) => server!.listen(0, '127.0.0.1', resolve));
+    const { port } = server.address() as AddressInfo;
+    const endpoint = `http://127.0.0.1:${port}/graphql`;
+
+    const client = new GraphQLTestClient(endpoint, undefined, undefined, { timeoutMs: 200 });
+    await expect(client.request('query { __typename }')).rejects.toThrow(
+      `Timeout: no response from ${endpoint} within 200 ms`
     );
   });
 });

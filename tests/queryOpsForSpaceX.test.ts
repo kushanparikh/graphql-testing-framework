@@ -29,16 +29,25 @@ jest.setTimeout(30_000);
  * `launches: null` and an INTERNAL_SERVER_ERROR. These tests assert that
  * failure so CI stays green while the outage lasts.
  *
+ * The gateway sometimes stalls instead of replying. A stall is the same
+ * outage, so requests time out after REQUEST_TIMEOUT_MS (inside the Jest
+ * timeout) and the timeout error also counts as the expected failure.
+ *
  * If one of these tests FAILS, the upstream has recovered. Restore the
  * positive assertions (data returned, length checked) and delete this note.
  *
  * @see https://studio.apollographql.com/public/SpaceX-pxxbxen/home for schema explorer
  */
 
-const UPSTREAM_OUTAGE = /invalid json response body at https:\/\/api\.spacexdata\.com/;
+const REQUEST_TIMEOUT_MS = 25_000;
+
+const UPSTREAM_OUTAGE =
+    /invalid json response body at https:\/\/api\.spacexdata\.com|Timeout: no response from https:\/\/spacex-production\.up\.railway\.app\//;
 
 describe("Query Operations for SpaceX", () => {
-    const client = new GraphQLTestClient('https://spacex-production.up.railway.app/');
+    const client = new GraphQLTestClient('https://spacex-production.up.railway.app/', undefined, undefined, {
+        timeoutMs: REQUEST_TIMEOUT_MS,
+    });
 
     test("[KNOWN OUTAGE] launches query fails with upstream error (fails when upstream recovers)", async () => {
         const query = `

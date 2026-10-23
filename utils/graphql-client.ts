@@ -15,6 +15,7 @@ import { expect } from '@jest/globals';
 export class GraphQLTestClient {
   private client: GraphQLClient;
   private endpoint: string;
+  private timeoutMs: number | undefined;
 
   /**
    * Create a new GraphQL test client
@@ -22,9 +23,17 @@ export class GraphQLTestClient {
    * @param endpoint - GraphQL API endpoint URL
    * @param token - Optional authentication token (Bearer)
    * @param headers - Optional custom headers
+   * @param options.timeoutMs - Optional per-request timeout; a request with no
+   *   response by then is aborted and reported as a timeout error
    */
-  constructor(endpoint: string, token?: string, headers?: Record<string, string>) {
+  constructor(
+    endpoint: string,
+    token?: string,
+    headers?: Record<string, string>,
+    options?: { timeoutMs?: number }
+  ) {
     this.endpoint = endpoint;
+    this.timeoutMs = options?.timeoutMs;
     const clientHeaders = {
       ...headers,
     };
@@ -34,7 +43,14 @@ export class GraphQLTestClient {
       clientHeaders.Authorization = `Bearer ${token}`;
     }
     
-    this.client = new GraphQLClient(endpoint, { headers: clientHeaders });
+    const timeoutMs = this.timeoutMs;
+    this.client = new GraphQLClient(endpoint, {
+      headers: clientHeaders,
+      ...(timeoutMs !== undefined && {
+        fetch: (input: RequestInfo | URL, init?: RequestInit) =>
+          fetch(input, { ...init, signal: AbortSignal.timeout(timeoutMs) }),
+      }),
+    });
   }
 
   /**
@@ -281,6 +297,15 @@ export class GraphQLTestClient {
         `Query: ${query.substring(0, 150)}...\n` +
         `Variables: ${JSON.stringify(variables)}\n` +
         `Original error: ${error.message}`
+      );
+    }
+
+    // Timeout: the endpoint accepted the connection but sent no response in time
+    if (error.name === 'TimeoutError') {
+      return new Error(
+        `Timeout: no response from ${this.endpoint} within ${this.timeoutMs} ms\n` +
+        `Query: ${query.substring(0, 150)}...\n` +
+        `Variables: ${JSON.stringify(variables)}`
       );
     }
 
