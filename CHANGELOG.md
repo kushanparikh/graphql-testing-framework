@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
+## [1.0.1] - 2026-10-23
 
 ### Added
 - `mutationOpsForSpaceX.test.ts`: validation-error test (`insert_users` with an undefined input field). Suite total is now 107 tests, 4 of them mutations.

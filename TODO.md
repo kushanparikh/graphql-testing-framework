@@ -2,7 +2,7 @@
 
 **Project:** GraphQL API Testing Suite (Portfolio Project 2)
 **Timeline:** 3 weeks @ 10 hours/week = 30 hours total
-**Current Status:** v1.0.0 tagged (abfac38); final review done; SpaceX tests in outage mode
+**Current Status:** Complete (v1.0.1, 2508be6); known issues open
 **Last Updated:** February 8, 2026
 
 ---
@@ -449,7 +449,8 @@ npm run test:coverage
 | v0.7.0 | Feb 5, 2026 | Rick & Morty query operations (9 tests) | ✅ COMPLETE |
 | v0.8.0 | Feb 7, 2026 | GitHub API authentication tests (6 tests) | ✅ COMPLETE |
 | v0.9.0 | Feb 8, 2026 | Documentation (ARCHITECTURE, LEARNING_NOTES, API_COVERAGE) | ✅ COMPLETE |
-| v1.0.0 | Week 3 end | Production ready (Final polish, release tag) | ✅ Tagged (final review done) |
+| v1.0.0 | Week 3 end | Production ready (Final polish, release tag) | ✅ Tagged |
+| v1.0.1 | Oct 23, 2026 | Final review fixes, coverage gate, CI green | ✅ Tagged (2508be6) |
 
 ---
 
@@ -457,7 +458,7 @@ npm run test:coverage
 
 **This Week's Focus:** Week 3 - Documentation & Polish
 
-**Next Task:** Restore SpaceX positive tests when the upstream recovers; address known review items
+**Next Task:** None for v1.0.1. Open: known issues below, and restore SpaceX positive tests when the upstream recovers
 
 **Known issues from final review (open):**
 1. The `batchRequests` success path is untested; no suite API supports batching.
@@ -476,4 +477,4 @@ npm run test:coverage
 ---
 
 *Last Updated: February 8, 2026*
-*Current Phase: v1.0.0 tagged; final review done (known issues open)*
+*Current Phase: Complete (v1.0.1); known issues open*
