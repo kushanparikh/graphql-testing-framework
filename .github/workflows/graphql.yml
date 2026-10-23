@@ -6,6 +6,8 @@ on:
     pull_request:
         branches: [main]
     workflow_dispatch:
+    schedule:
+        - cron: '15 6 * * *'
 
 jobs:
     test:
@@ -33,7 +35,7 @@ jobs:
             # The test script in package.json includes the
             # --experimental-vm-modules flag required for ESM support.
             - name: Run tests
-              run: npm test
+              run: mkdir -p results && npm test -- --json --outputFile=results/jest.json
               env:
                 # Exposes the built-in GITHUB_TOKEN so the GitHub API
                 # authentication tests can run in CI.
@@ -45,6 +47,7 @@ jobs:
 
             # ─── Coverage ─────────────────────────────────────────────────
             - name: Run test with coverage
+              if: github.event_name != 'schedule'
               run: npm run test:coverage
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -67,12 +70,11 @@ jobs:
                 path: html-report/
                 retention-days: 14
 
-            - name: Upload test result on failure
+            - name: Upload results for unified-test-reporting
               uses: actions/upload-artifact@v4
-              if: ${{ failure() }}
+              if: ${{ !cancelled() }}
               with:
-                name: test-failure-details
-                path: |
-                  jest-failures.json
-                  html-report/report.html
-                retention-days: 14
+                name: utr-results
+                path: results/jest.json
+                retention-days: 90
+                if-no-files-found: error
